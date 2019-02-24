@@ -684,6 +684,13 @@ Request.prototype.getNewAgent = function () {
       poolKey += options.pfx.toString('ascii')
     }
 
+    if (options.passphrase) {
+      if (poolKey) {
+        poolKey += ':'
+      }
+      poolKey += options.passphrase
+    }
+
     if (options.ciphers) {
       if (poolKey) {
         poolKey += ':'
