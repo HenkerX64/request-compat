@@ -513,7 +513,8 @@ Request.prototype.init = function (options) {
     self.src = src
     if (isReadStream(src)) {
       if (!self.hasHeader('content-type')) {
-        self.setHeader('content-type', mime.lookup(src.path))
+        // @note fallback to 'application/octet-stream' if mime.lookup returns `false`
+        self.setHeader('content-type', mime.lookup(src.path) || 'application/octet-stream')
       }
     } else {
       if (src.headers) {
