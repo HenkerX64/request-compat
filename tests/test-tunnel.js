@@ -333,6 +333,7 @@ function addTests () {
 
   runTest('https->http over http, tunnel=true', {
     url: ss.url + '/redirect/http',
+    allowInsecureRedirect: true,
     proxy: s.url,
     tunnel: true
   }, [
@@ -345,6 +346,7 @@ function addTests () {
 
   runTest('https->http over http, tunnel=false', {
     url: ss.url + '/redirect/http',
+    allowInsecureRedirect: true,
     proxy: s.url,
     tunnel: false
   }, [
@@ -357,6 +359,7 @@ function addTests () {
 
   runTest('https->http over http, tunnel=default', {
     url: ss.url + '/redirect/http',
+    allowInsecureRedirect: true,
     proxy: s.url
   }, [
     'http connect to localhost:' + ss.port,
