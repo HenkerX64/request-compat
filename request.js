@@ -531,6 +531,10 @@ Request.prototype.init = function (options) {
           self._form.pipe(self)
         } else if (self._auth.hasAuth && self._auth.sentAuth) {
           self._form.pipe(self)
+        } else {
+          self.once('request', function (req) {
+            req.removeHeader('content-length')
+          })
         }
       }
       if (self._multipart && self._multipart.chunked) {

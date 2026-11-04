@@ -109,10 +109,16 @@ function runTest (t, options) {
     if (options.auth) {
       reqOptions.auth = {user: 'user', pass: 'pass', sendImmediately: false}
     }
+    if (options.agent) {
+      reqOptions.agent = options.agent
+    }
     request.post(reqOptions, function (err, res, body) {
       t.equal(err, null)
       t.equal(res.statusCode, 200)
       t.deepEqual(body, options.json ? {status: 'done'} : 'done')
+      if (options.agent) {
+        options.agent.destroy()
+      }
       server.close(function () {
         t.end()
       })
@@ -130,4 +136,8 @@ tape('multipart formData + JSON', function (t) {
 
 tape('multipart formData + basic auth', function (t) {
   runTest(t, {json: false, auth: true})
+})
+
+tape('multipart formData + basic auth over a keep-alive agent', function (t) {
+  runTest(t, {json: false, auth: true, agent: new http.Agent({keepAlive: true})})
 })
