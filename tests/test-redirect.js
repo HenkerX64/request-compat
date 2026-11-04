@@ -345,8 +345,7 @@ tape('http to https redirect', function (t) {
   hits = {}
   request.get({
     uri: require('url').parse(s.url + '/ssl'),
-    rejectUnauthorized: false,
-    allowInsecureRedirect: true
+    rejectUnauthorized: false
   }, function (err, res, body) {
     t.equal(err, null)
     t.equal(res.statusCode, 200)
@@ -355,14 +354,43 @@ tape('http to https redirect', function (t) {
   })
 })
 
-tape('http to https redirect should fail without the explicit "allowInsecureRedirect" option', function (t) {
+tape('http to https redirect keeps a caller agent and fails without the explicit "allowInsecureRedirect" option', function (t) {
   hits = {}
   request.get({
     uri: require('url').parse(s.url + '/ssl'),
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
+    agent: new http.Agent()
   }, function (err, res, body) {
     t.notEqual(err, null)
-    t.equal(err.code, 'ERR_INVALID_PROTOCOL', 'Failed to cross-protocol redirect')
+    t.ok(/^Protocol "https:" not supported/.test(err.message), 'Failed to cross-protocol redirect')
+    t.end()
+  })
+})
+
+tape('http to https redirect keeps a caller agentClass and fails without the explicit "allowInsecureRedirect" option', function (t) {
+  hits = {}
+  request.get({
+    uri: require('url').parse(s.url + '/ssl'),
+    rejectUnauthorized: false,
+    agentClass: http.Agent
+  }, function (err, res, body) {
+    t.notEqual(err, null)
+    t.ok(/^Protocol "https:" not supported/.test(err.message), 'Failed to cross-protocol redirect')
+    t.end()
+  })
+})
+
+tape('http to https redirect replaces a caller agent with the "allowInsecureRedirect" option', function (t) {
+  hits = {}
+  request.get({
+    uri: require('url').parse(s.url + '/ssl'),
+    rejectUnauthorized: false,
+    agent: new http.Agent(),
+    allowInsecureRedirect: true
+  }, function (err, res, body) {
+    t.equal(err, null)
+    t.equal(res.statusCode, 200)
+    t.equal(body, 'SSL', 'Got SSL redirect')
     t.end()
   })
 })
