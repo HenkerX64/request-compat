@@ -75,7 +75,7 @@ release-notes: ## the CHANGELOG lines of TAG=v<version>
 	fi
 	printf '%s\n' "$$notes"
 
-publish: ## npm publish and GitHub release of TAG=v<version>, run by release.yml
+publish: ## npm publish and GitHub release of TAG=v<version>, each skipped if it exists; run by release.yml
 	@test -n "$(TAG)" || { echo 'usage: make publish TAG=v<version>'; exit 2; }
 	version=$$(node -p "require('./package.json').version")
 	if [ "$(TAG)" != "v$$version" ]; then
@@ -87,5 +87,14 @@ publish: ## npm publish and GitHub release of TAG=v<version>, run by release.yml
 	dist_tag=latest
 	prerelease=
 	case "$$version" in *-*) dist_tag=next; prerelease=--prerelease ;; esac
-	npm publish --provenance --access public --tag "$$dist_tag" --ignore-scripts
-	gh release create "$(TAG)" --title "$(TAG)" --notes-file "$$notes_file" $$prerelease
+	name=$$(node -p "require('./package.json').name")
+	if [ "$$(npm view "$$name@$$version" version 2>/dev/null)" = "$$version" ]; then
+	  echo "$$name@$$version is already on npm"
+	else
+	  npm publish --access public --tag "$$dist_tag" --ignore-scripts
+	fi
+	if gh release view "$(TAG)" >/dev/null 2>&1; then
+	  echo "GitHub release $(TAG) already exists"
+	else
+	  gh release create "$(TAG)" --title "$(TAG)" --target "$$(git rev-parse HEAD)" --notes-file "$$notes_file" $$prerelease
+	fi
