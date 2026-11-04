@@ -19,7 +19,7 @@ openssl x509 -req \
     -set_serial 0x`cat ca.srl` \
     -passin 'pass:password' \
     -out client.crt \
-    -days 1095
+    -days 3650
 
 # Encrypt with password
 openssl rsa -aes128 -in client.key -out client-enc.key -passout 'pass:password'

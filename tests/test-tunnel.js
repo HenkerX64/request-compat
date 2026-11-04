@@ -448,7 +448,7 @@ function addTests () {
 tape('setup', function (t) {
   s.listen(0, function () {
     ss.listen(0, function () {
-      ss2.listen(0, 'localhost', function () {
+      ss2.listen(0, function () {
         addTests()
         tape('cleanup', function (t) {
           s.destroy(function () {

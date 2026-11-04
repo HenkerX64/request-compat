@@ -1,10 +1,16 @@
 [ req ]
-default_bits           = 1024
+default_bits           = 2048
 days                   = 3650
 distinguished_name     = req_distinguished_name
 attributes             = req_attributes
 prompt                 = no
 output_password        = password
+x509_extensions        = v3_ca
+
+[ v3_ca ]
+basicConstraints       = critical, CA:TRUE
+keyUsage               = critical, keyCertSign, cRLSign
+subjectKeyIdentifier   = hash
 
 [ req_distinguished_name ]
 C                      = US

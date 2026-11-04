@@ -7,12 +7,15 @@ var http = require('http')
 
 var plainServer = server.createServer()
 var redirectMockTime = 10
+var plainResponseDelay = 5
 
 tape('setup', function (t) {
   plainServer.listen(0, function () {
     plainServer.on('/', function (req, res) {
-      res.writeHead(200)
-      res.end('plain')
+      setTimeout(function () {
+        res.writeHead(200)
+        res.end('plain')
+      }, plainResponseDelay)
     })
     plainServer.on('/redir', function (req, res) {
       // fake redirect delay to ensure strong signal for rollup check

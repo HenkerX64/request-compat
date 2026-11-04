@@ -15,7 +15,9 @@ var prevStderrLen = 0
 tape('setup', function (t) {
   process.stderr._oldWrite = process.stderr.write
   process.stderr.write = function (string, encoding, fd) {
-    stderr.push(string)
+    if (!/DeprecationWarning/.test(string)) {
+      stderr.push(string)
+    }
   }
 
   s.listen(0, function () {

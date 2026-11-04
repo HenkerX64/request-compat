@@ -10,7 +10,7 @@ var currResponseHandler
 ['http://google.com/', 'https://google.com/'].forEach(function (url) {
   s.on(url, function (req, res) {
     currResponseHandler(req, res)
-    res.writeHeader(200)
+    res.writeHead(200)
     res.end('ok')
   })
 })
