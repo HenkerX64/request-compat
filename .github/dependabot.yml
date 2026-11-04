@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+  # Only devDependencies: an update of a runtime dependency must keep the
+  # behaviour of request 2.88.2 (law 2 in AGENTS.md), which a green test run
+  # does not prove. Security updates of runtime dependencies still come as
+  # Dependabot security updates and are reviewed by hand.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    allow:
+      - dependency-type: development

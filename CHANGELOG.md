@@ -1,5 +1,18 @@
 ## Change Log
 
+### v2.88.3 (2026/11/04)
+- RC-5 Do not answer a 401 challenge of another host after a redirect with the credentials of the first host (@HenkerX64)
+- request-#3751 Update form-data to ~2.5.6: crypto boundary, CVE-2025-7783, and escaped quotes and line breaks in part headers, CVE-2026-12143 (@HenkerX64)
+- RC-2 Drop the `Authorization` header on 307 redirects to another host (@HenkerX64)
+- RC-1 Drop the previous host's cookies on redirects to another host, from the caller's `Cookie` header and from the jar (@HenkerX64)
+- Fix 400 for `formData` with `auth.sendImmediately: false` on keep-alive sockets, the default since Node 19 (@HenkerX64)
+- request-#3442 Fail cross-protocol redirects only for an `agent` or `agentClass` passed by the caller; agents created by request are replaced as before (@HenkerX64)
+- cypress-PR-#16 Remove har-validator, whose unhandled rejection for an invalid `har` ended the process on Node 15+ (@JJ)
+- Replace the `uuid` dependency with `crypto.randomBytes` (@HenkerX64)
+- cypress-PR-#28 Add `allowInsecureRedirect` option, CVE-2023-28155 (@legobeat)
+- cypress-PR-#7 Treat aborts the same as before Node 16 (@flotwig)
+- cypress-PR-#2 Fix infinite recursion during some redirects (@kuceb)
+
 ### v2.88.0 (2018/08/10)
 - [#2996](https://github.com/request/request/pull/2996) fix(uuid): import versioned uuid (@kwonoj)
 - [#2994](https://github.com/request/request/pull/2994) Update to oauth-sign 0.9.0 (@dlecocq)

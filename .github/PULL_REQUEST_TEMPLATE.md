@@ -1,13 +1,8 @@
-## PR Checklist:
-- [ ] I have run `npm test` locally and all tests are passing.
-- [ ] I have added/updated tests for any new behavior.
-       <!-- Request is a complex project, there are VERY FEW exceptions
-               where a new test is not required for new behavior. -->
-- [ ] If this is a significant change, an issue has already been created where the problem / solution was discussed: [N/A, or add link to issue here]
-       <!-- If you'd like to suggest a significant change to request,
-               please create an issue to discuss those changes and gather
-               feedback BEFORE submitting your PR. -->
+## Checklist
 
+- [ ] The change follows the laws in AGENTS.md: no new features, the behaviour of request 2.88.2 stays.
+- [ ] A test fails before and passes after the change.
+- [ ] `make test-in-docker` and `make lint` pass.
+- [ ] Library changes have a CHANGELOG line with the tracker ID.
 
-## PR Description
-<!-- Describe Your PR Here! -->
+## Description

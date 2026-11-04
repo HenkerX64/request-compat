@@ -1,0 +1,18 @@
+# request-compat
+
+> Drop-in replacement for the deprecated npm package `request` 2.88.2. Same API and behaviour, security holes closed (CVE-2023-28155, cookies and Authorization sent to another host on redirects, form-data CVE-2025-7783 and CVE-2026-12143), tested on Node 6 to 26, no new features. Install it under the name `request`: `npm install request@npm:request-compat@^2.88.3`, or for a dependency that uses request, `"overrides": { "request": "npm:request-compat@^2.88.3" }` (npm 8.3+).
+
+Use it when code or a dependency still calls `require('request')` and cannot be rewritten. For new code, use Node's `fetch`, undici or got instead.
+
+## Docs
+
+- [README](README.md): what it is, how to install it, the differences from request 2.88.2
+- [Migration](docs/migration.md): direct use, overrides, npm 6/7, yarn and pnpm, request-promise, checking the installed copy
+- [API](docs/api/README.md): the request API by topic, unchanged from 2.88.2
+- [Changelog](CHANGELOG.md): every change on top of request 2.88.2
+- [Tracker](docs/tracker.md): planned, known and rejected problems
+
+## Optional
+
+- [Rules for changes](AGENTS.md): the laws this repository follows
+- [Contributing](CONTRIBUTING.md)

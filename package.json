@@ -1,20 +1,29 @@
 {
-  "name": "request",
-  "description": "Simplified HTTP request client.",
+  "name": "request-compat",
+  "description": "Drop-in replacement for the deprecated request 2.88.2: same API and behaviour, security fixes, tested on Node 6 to 26.",
   "keywords": [
+    "request",
     "http",
-    "simple",
-    "util",
-    "utility"
+    "https",
+    "drop-in",
+    "replacement",
+    "deprecated",
+    "migration",
+    "compat",
+    "security",
+    "cve",
+    "request-promise",
+    "overrides"
   ],
-  "version": "2.88.1",
+  "version": "2.88.3",
   "author": "Mikeal Rogers <mikeal.rogers@gmail.com>",
+  "homepage": "https://github.com/HenkerX64/request-compat#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/request/request.git"
+    "url": "git+https://github.com/HenkerX64/request-compat.git"
   },
   "bugs": {
-    "url": "http://github.com/request/request/issues"
+    "url": "https://github.com/HenkerX64/request-compat/issues"
   },
   "license": "Apache-2.0",
   "engines": {
@@ -47,7 +56,7 @@
     "tunnel-agent": "^0.6.0"
   },
   "scripts": {
-    "test": "npm run lint && npm run test-ci && npm run test-browser",
+    "test": "npm run lint && npm run test-ci",
     "test-ci": "taper tests/test-*.js",
     "test-cov": "nyc --reporter=lcov tape tests/test-*.js",
     "test-browser": "node tests/browser/start.js",
@@ -58,8 +67,6 @@
     "browserify": "^13.0.1",
     "browserify-istanbul": "^2.0.0",
     "buffer-equal": "^1.0.0",
-    "codecov": "^3.0.4",
-    "coveralls": "^3.0.2",
     "function-bind": "^1.0.2",
     "karma": "^3.0.0",
     "karma-browserify": "^5.0.1",
@@ -75,10 +82,7 @@
     "tape": "^4.6.0",
     "taper": "^0.5.0"
   },
-  "greenkeeper": {
-    "ignore": [
-      "hawk",
-      "har-validator"
-    ]
+  "overrides": {
+    "shelljs": "^0.8.5"
   }
 }
