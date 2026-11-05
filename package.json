@@ -15,7 +15,7 @@
     "request-promise",
     "overrides"
   ],
-  "version": "2.88.3",
+  "version": "2.88.4",
   "author": "Mikeal Rogers <mikeal.rogers@gmail.com>",
   "homepage": "https://github.com/HenkerX64/request-compat#readme",
   "repository": {

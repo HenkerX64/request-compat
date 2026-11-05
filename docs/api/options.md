@@ -94,7 +94,7 @@ The first argument can be either a `url` or an `options` object. The only requir
   - `timingPhases` Contains the durations of each request phase. If there were redirects, the properties reflect the timings of the final request in the redirect chain:
     - `wait`: Duration of socket initialization (`timings.socket`)
     - `dns`: Duration of DNS lookup (`timings.lookup` - `timings.socket`)
-    - `tcp`: Duration of TCP connection (`timings.connect` - `timings.socket`)
+    - `tcp`: Duration of TCP connection (`timings.connect` - `timings.lookup`)
     - `firstByte`: Duration of HTTP server response (`timings.response` - `timings.connect`)
     - `download`: Duration of HTTP download (`timings.end` - `timings.response`)
     - `total`: Duration entire HTTP round-trip (`timings.end`)

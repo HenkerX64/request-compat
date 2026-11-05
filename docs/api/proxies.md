@@ -10,12 +10,12 @@ then use the supplied connection to connect to the endpoint.
 That is, first it will make a request like:
 
 ```
-HTTP/1.1 CONNECT endpoint-server.com:80
+CONNECT endpoint-server.com:80 HTTP/1.1
 Host: proxy-server.com
 User-Agent: whatever user agent you specify
 ```
 
-and then the proxy server make a TCP connection to `endpoint-server`
+and then the proxy server makes a TCP connection to `endpoint-server`
 on port `80`, and return a response that looks like:
 
 ```
@@ -36,7 +36,7 @@ the endpoint.
 For example, it will make a single request that looks like:
 
 ```
-HTTP/1.1 GET http://endpoint-server.com/some-url
+GET http://endpoint-server.com/some-url HTTP/1.1
 Host: proxy-server.com
 Other-Headers: all go here
 

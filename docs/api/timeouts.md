@@ -11,16 +11,17 @@ attempting to establish a connection to a remote machine (corresponding to the
 server is too slow to send back a part of the response.
 
 These two situations have widely different implications for what went wrong
-with the request, so it's useful to be able to distinguish them. You can detect
-timeout errors by checking `err.code` for an 'ETIMEDOUT' value. Further, you
-can detect whether the timeout was a connection timeout by checking if the
-`err.connect` property is set to `true`.
+with the request, so it's useful to be able to distinguish them by `err.code`
+and `err.connect`: a connect timeout gives 'ETIMEDOUT' with `err.connect` set
+to `true`, a read timeout gives 'ESOCKETTIMEDOUT' with `err.connect` set to
+`false`.
 
 ```js
 request.get('http://10.255.255.1', {timeout: 1500}, function(err) {
+    // 'ETIMEDOUT' for a connect timeout, 'ESOCKETTIMEDOUT' for a read timeout
     console.log(err.code === 'ETIMEDOUT');
-    // Set to `true` if the timeout was a connection timeout, `false` or
-    // `undefined` otherwise.
+    // `true` for a connect timeout, `false` for a read timeout, `undefined`
+    // for errors that are no timeout of request
     console.log(err.connect === true);
     process.exit(0);
 });

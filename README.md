@@ -10,12 +10,14 @@ needs `request`.
 - **Same API.** Callbacks, streams, `request.defaults`, `request.jar`,
   `request-promise` and `request-promise-native` work unchanged. The 55 test
   files of request 2.88.2 still pass; 8 of them carry fixes for newer Node,
-  Docker or the security fixes below, each explained in its commit.
+  Docker or the security fixes below, each explained in its commit, and 2
+  got new cases.
 - **Security fixes.** CVE-2023-28155, the previous host's cookies on
   redirects to another host, `Authorization` on 307 redirects to another
-  host, credentials on a 401 challenge after a redirect to another host,
-  form-data CVE-2025-7783 and CVE-2026-12143. See
-  [Differences](#differences-from-request-2882).
+  host, credentials on a 401 challenge after a redirect to another host, a
+  redirect `Location` that ended the process, `checkServerIdentity` skipped
+  behind a proxy, `pool: false` skipping the proxy, form-data CVE-2025-7783
+  and CVE-2026-12143. See [Differences](#differences-from-request-2882).
 - **Old Node too.** CI runs the tests on every even (LTS) Node major from 6
   to 26, like request's own `engines` field promised.
 - **No new features.** Nothing to learn, nothing to migrate.
@@ -74,6 +76,21 @@ dependencies:
   characters from `crypto` instead of 24 `Math.random` digits
   (CVE-2025-7783), and `"`, CR and LF in field names and filenames are sent
   as `%22`, `%0D` and `%0A` (CVE-2026-12143).
+- A redirect whose `Location` cannot be parsed, for example because of
+  malformed percent-encoding or an invalid host, calls back with the parse
+  error. In 2.88.2 the error was thrown out of the response handler and ended
+  the process; Node's `fetch` rejects such a redirect too.
+- Behind a proxy, `checkServerIdentity`, also from `agentOptions`, runs as on
+  a direct request. In 2.88.2 it was not passed into the proxy tunnel, so
+  certificate pinning was skipped without an error; curl pins the target
+  behind a proxy too.
+- With `pool: false`, an https request through a proxy still goes through
+  the proxy. In 2.88.2 `pool: false` replaced the tunnel agent, so the
+  request connected to the target directly; curl uses the configured proxy
+  in any case.
+- On Node 16 and later, `abort()` after the response headers no longer
+  calls back or emits `ECONNRESET`; request stays silent after `abort()`, as
+  it did on Node 14 and earlier.
 
 Known issues that stay as in 2.88.2, among them the npm audit findings for
 qs and tough-cookie, are listed in [docs/tracker.md](docs/tracker.md#known).
