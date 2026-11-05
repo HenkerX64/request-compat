@@ -572,13 +572,17 @@ Request.prototype.init = function (options) {
         }
         switch (self.method) {
           case 'GET':
+          case undefined:
+            break
           case 'HEAD':
           case 'TRACE':
           case 'DELETE':
           case 'CONNECT':
           case 'OPTIONS':
-          case undefined:
             // @note this behavior is same as Node.js
+            if (self.hasHeader('content-length')) {
+              self.setHeader('content-length', 0)
+            }
             break
           default:
             self.setHeader('content-length', 0)

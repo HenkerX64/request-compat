@@ -36,6 +36,25 @@ sends('POST', '0')
 sends('PUT', '0')
 sends('PATCH', '0')
 
+function overwrites (method) {
+  tape(method + ' without a body sends 0 for a content-length of the caller, as in 2.88.2', function (t) {
+    request({
+      method: method,
+      url: 'http://localhost:' + s.address().port + '/',
+      headers: {'content-length': 4},
+      timeout: 1000
+    }, function (err, res) {
+      t.equal(err, null)
+      t.equal(res && res.headers['x-content-length'], '0')
+      t.end()
+    })
+  })
+}
+
+overwrites('DELETE')
+overwrites('OPTIONS')
+overwrites('POST')
+
 tape('cleanup', function (t) {
   s.destroy(function () {
     t.end()
