@@ -39,6 +39,16 @@ var version = helpers.version
 var globalCookieJar = cookies.jar()
 
 var globalPool = {}
+var checkServerIdentityIds = new WeakMap()
+var checkServerIdentityCount = 0
+
+function checkServerIdentityId (checkServerIdentity) {
+  if (!checkServerIdentityIds.has(checkServerIdentity)) {
+    checkServerIdentityCount += 1
+    checkServerIdentityIds.set(checkServerIdentity, checkServerIdentityCount)
+  }
+  return checkServerIdentityIds.get(checkServerIdentity)
+}
 
 function filterForNonReserved (reserved, options) {
   // Filter out properties that are not reserved.
@@ -690,6 +700,13 @@ Request.prototype.getNewAgent = function () {
         poolKey += ':'
       }
       poolKey += options.secureOptions
+    }
+
+    if (typeof options.checkServerIdentity === 'function') {
+      if (poolKey) {
+        poolKey += ':'
+      }
+      poolKey += 'checkServerIdentity' + checkServerIdentityId(options.checkServerIdentity)
     }
   }
 
