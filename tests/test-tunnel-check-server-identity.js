@@ -78,6 +78,26 @@ tape('checkServerIdentity runs through a proxy tunnel and can accept the certifi
   })
 })
 
+tape('checkServerIdentity of agentOptions runs through a proxy tunnel', function (t) {
+  var calls = 0
+  var options = {
+    url: 'https://localhost:' + target.address().port + '/',
+    proxy: 'http://127.0.0.1:' + proxy.address().port,
+    ca: ca,
+    agentOptions: {
+      checkServerIdentity: function () {
+        calls++
+        return new Error('pinned certificate mismatch')
+      }
+    }
+  }
+  request(options, function (err) {
+    t.equal(calls, 1)
+    t.equal(err && err.message, 'pinned certificate mismatch')
+    t.end()
+  })
+})
+
 tape('cleanup', function (t) {
   target.destroy(function () {
     proxy.destroy(function () {
