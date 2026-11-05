@@ -1123,7 +1123,7 @@ Request.prototype.onRequestResponse = function (response) {
       self.emit('end', chunk)
     })
     responseContent.on('error', function (error) {
-      if (error.code === 'ECONNRESET' && error.message === 'aborted' && self.listenerCount('error') === 0) {
+      if (error.code === 'ECONNRESET' && error.message === 'aborted' && (self._aborted || self.listenerCount('error') === 0)) {
         // Node 16 causes aborts to emit errors if there is an error listener.
         // Without this short-circuit, it will cause unhandled exceptions since
         // there is not always an `error` listener on `self`, but there will
