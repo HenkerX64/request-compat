@@ -36,6 +36,7 @@
     "request.js"
   ],
   "dependencies": {
+    "@postman/tunnel-agent": "0.6.3",
     "aws-sign2": "~0.7.0",
     "aws4": "^1.8.0",
     "caseless": "~0.12.0",
@@ -52,8 +53,7 @@
     "performance-now": "^2.1.0",
     "qs": "~6.5.2",
     "safe-buffer": "^5.1.2",
-    "tough-cookie": "~2.5.0",
-    "tunnel-agent": "^0.6.0"
+    "tough-cookie": "~2.5.0"
   },
   "scripts": {
     "test": "npm run lint && npm run test-ci",
