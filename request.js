@@ -343,7 +343,7 @@ Request.prototype.init = function (options) {
     for (var formKey in formData) {
       if (formData.hasOwnProperty(formKey)) {
         var formValue = formData[formKey]
-        if (formValue instanceof Array) {
+        if (Array.isArray(formValue)) {
           for (var j = 0; j < formValue.length; j++) {
             appendFormValue(formKey, formValue[j])
           }
