@@ -499,7 +499,9 @@ Request.prototype.init = function (options) {
   }
 
   if (self.pool === false) {
-    self.agent = false
+    if (!self.tunnel || !self.proxy) {
+      self.agent = false
+    }
   } else {
     self.agent = self.agent || self.getNewAgent()
   }
