@@ -2,6 +2,7 @@
 
 var http = require('http')
 var https = require('https')
+var tls = require('tls')
 var url = require('url')
 var util = require('util')
 var stream = require('stream')
@@ -88,6 +89,54 @@ function responseToJSON () {
     body: self.body,
     headers: self.headers,
     request: requestToJSON.call(self.request)
+  }
+}
+
+function customCheckServerIdentity (check) {
+  return typeof check === 'function' && check !== tls.checkServerIdentity ? check : undefined
+}
+
+function ownCheckServerIdentity (request) {
+  return customCheckServerIdentity((request.agentOptions && request.agentOptions.checkServerIdentity) || request.checkServerIdentity)
+}
+
+function agentCheckServerIdentity (agent) {
+  return customCheckServerIdentity(agent && agent.options && agent.options.checkServerIdentity)
+}
+
+function isPlainAgent (agent, Agent) {
+  return Boolean(Agent) && Object.getPrototypeOf(agent) === Agent.prototype &&
+    !Object.prototype.hasOwnProperty.call(agent, 'createConnection') &&
+    !Object.prototype.hasOwnProperty.call(agent, 'addRequest')
+}
+
+function sharedTlsAgent (request) {
+  var agent = request.agent
+  var httpModule = request.httpModule
+  var httpsModule = (request.httpModules && request.httpModules['https:']) || https
+  if (!agent || !agent.options || httpModule !== httpsModule) {
+    return null
+  }
+  if (agent === httpModule.globalAgent) {
+    return isPlainAgent(agent, httpModule.Agent) && !agentCheckServerIdentity(agent) ? agent : null
+  }
+  for (var key in request.pool) {
+    if (request.pool[key] === agent) {
+      return agent
+    }
+  }
+  return null
+}
+
+function isolatedAgent (agent, check) {
+  var options = extend({}, agent.options, {keepAlive: false, checkServerIdentity: check})
+  if (!check) {
+    delete options.checkServerIdentity
+  }
+  try {
+    return new agent.constructor(options)
+  } catch (err) {
+    return null
   }
 }
 
@@ -773,6 +822,18 @@ Request.prototype.start = function () {
   // auth option.  If we don't remove it, we're gonna have a bad time.
   var reqOptions = copy(self)
   delete reqOptions.auth
+  var check = ownCheckServerIdentity(self)
+  var agentCheck = agentCheckServerIdentity(self.agent)
+  if (check !== agentCheck) {
+    var shared = sharedTlsAgent(self)
+    var isolated = shared && isolatedAgent(shared, check)
+    if (isolated) {
+      reqOptions.agent = isolated
+    }
+    if (check && !('session' in reqOptions) && (shared || !agentCheck)) {
+      reqOptions.session = undefined
+    }
+  }
 
   debug('make request', self.uri.href)
 
