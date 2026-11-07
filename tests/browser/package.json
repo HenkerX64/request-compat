@@ -1,0 +1,17 @@
+{
+  "name": "request-compat-browser-test",
+  "private": true,
+  "description": "Runs tests/browser/test.js in headless Chrome through karma",
+  "scripts": {
+    "start": "node start.js"
+  },
+  "devDependencies": {
+    "browserify": "^17.0.1",
+    "function-bind": "^1.0.2",
+    "karma": "^6.4.4",
+    "karma-browserify": "^8.1.0",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-tap": "^4.2.0",
+    "watchify": "^4.0.0"
+  }
+}

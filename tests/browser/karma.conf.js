@@ -1,5 +1,4 @@
 'use strict'
-var istanbul = require('browserify-istanbul')
 
 module.exports = function (config) {
   config.set({
@@ -7,15 +6,14 @@ module.exports = function (config) {
     basePath: '../..',
     frameworks: ['tap', 'browserify'],
     preprocessors: {
-      'tests/browser/test.js': ['browserify'],
-      '*.js,!(tests)/**/*.js': ['coverage']
+      'tests/browser/test.js': ['browserify']
     },
     files: [
       'tests/browser/test.js'
     ],
     port: 9876,
 
-    reporters: ['dots', 'coverage'],
+    reporters: ['dots'],
 
     colors: true,
 
@@ -23,33 +21,26 @@ module.exports = function (config) {
 
     autoWatch: false,
 
-    browsers: ['PhantomJS_without_security'],
+    browsers: ['ChromeHeadlessWithoutSecurity'],
 
     singleRun: true,
 
     plugins: [
-      'karma-phantomjs-launcher',
-      'karma-coverage',
+      'karma-chrome-launcher',
       'karma-browserify',
       'karma-tap'
     ],
     browserify: {
-      debug: true,
-      transform: [istanbul({
-        ignore: ['**/node_modules/**', '**/tests/**']
-      })]
-    },
-    coverageReporter: {
-      type: 'lcov',
-      dir: 'coverage/'
+      debug: true
     },
 
-    // Custom launcher to allowe self signed certs.
+    // Custom launcher to allow self signed certs.
     customLaunchers: {
-      PhantomJS_without_security: {
-        base: 'PhantomJS',
+      ChromeHeadlessWithoutSecurity: {
+        base: 'ChromeHeadless',
         flags: [
-          '--ignore-ssl-errors=true'
+          '--no-sandbox',
+          '--ignore-certificate-errors'
         ]
       }
     }
