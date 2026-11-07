@@ -1,5 +1,14 @@
 ## Change Log
 
+### v2.88.5 (2026/11/06)
+- RC-11 A request with its own `checkServerIdentity` no longer reuses a keep-alive socket or TLS session that another request opened without that check, so its check runs; with an agent passed by the caller only the TLS session reuse stops (RC-13); Node fixed the same hole as CVE-2026-58040 in 22.23.2, 24.18.1 and 26.5.1 (@HenkerX64)
+- request-#2964 Run a `checkServerIdentity` of `agentOptions` or of the request although the pool already holds an agent for the host without it or with another check, and run Node's default check for a request without one on an agent that another request created with a check (@HenkerX64)
+- Send the `Cookie` header passed by the caller again when a redirect returns to the first host with the same scheme and port, as 2.88.2 did and curl does (@HenkerX64)
+- Stop sending `Secure` cookies of the jar over http after a redirect from https on the same host; 2.88.2 sent the previous Cookie header again when the jar had no cookie for the new URL (@HenkerX64)
+- Give the `auth` credentials back to the first host after a redirect to another host only with the same scheme and port, as curl does; 2.88.3 and 2.88.4 also sent them to the first host name on another scheme or port (@HenkerX64)
+- Sign `aws` requests again only for the first host after a redirect to another host; 2.88.2 sent a new signature with the access key id and the session token to every host (@HenkerX64)
+- Follow a redirect between http and https through a proxy again when the caller passed an `agent`; since 2.88.3 the tunnel agent of the previous hop was kept and the redirect failed with EPROTO (@HenkerX64)
+
 ### v2.88.4 (2026/11/06)
 - request-#2872 Pass `checkServerIdentity` of `agentOptions` into the proxy tunnel as well (@HenkerX64)
 - Fix a hang of a chunked `multipart` body on redirects that switch to GET (@codenirvana)

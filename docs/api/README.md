@@ -1,7 +1,7 @@
 # API of request-compat
 
 The API is the one of request 2.88.2; this text is its README, split by topic.
-Behaviour that differs from 2.88.2 is listed in [../../README.md](../../README.md#differences-from-request-2882).
+Behaviour that differs from 2.88.2 is listed in [../../README.md](../../README.md#differences-from-request-2882) and, for bug fixes, in [../../CHANGELOG.md](../../CHANGELOG.md).
 
 - [Streaming](streaming.md): Pipe files, responses and requests into and out of request.
 - [Promises & Async/Await](promises.md): Wrappers for promises and async/await.

@@ -46,6 +46,11 @@ people and agents. A change that breaks one of them is not committed.
    commit message names the source commit or pull request and its author.
    Upstream authors are never contacted: no comments, mentions, issues or
    pull requests in their repositories.
+10. **Guards are not bent.** A gate, CI job, `make check-original-tests` or
+    law that blocks a change is never edited, narrowed or skipped to let that
+    change through. The blocked thing is fixed instead (revive the test,
+    upgrade the tool), or the conflict goes to the maintainer. A guard
+    changes only in a commit of its own that the maintainer asked for.
 
 ## Commits
 
@@ -55,7 +60,10 @@ people and agents. A change that breaks one of them is not committed.
 
 ## Markdown
 
-Tables are column-aligned, so that they read in a plain editor.
+Tables are column-aligned when they are created, so that they read in a
+plain editor. A later edit changes only its own rows: a new or changed row
+is padded to the existing column widths and may run longer; the other rows
+are not re-padded, so the diff shows only what changed.
 
 ## This file
 
