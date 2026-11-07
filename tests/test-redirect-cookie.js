@@ -1,6 +1,9 @@
 'use strict'
 
 var http = require('http')
+var https = require('https')
+var fs = require('fs')
+var path = require('path')
 var tape = require('tape')
 var request = require('../index')
 var destroyable = require('server-destroy')
@@ -76,8 +79,19 @@ var s2 = http.createServer(function (req, res) {
   res.end()
 })
 
+var ca = fs.readFileSync(path.resolve(__dirname, 'ssl/ca/ca.crt'))
+var secure = https.createServer({
+  key: fs.readFileSync(path.resolve(__dirname, 'ssl/ca/localhost.key')),
+  cert: fs.readFileSync(path.resolve(__dirname, 'ssl/ca/localhost.crt'))
+}, function (req, res) {
+  hops.push('https ' + (req.headers.cookie || '(none)'))
+  res.writeHead(302, {location: 'http://localhost:' + s2.address().port + '/landing'})
+  res.end()
+})
+
 destroyable(s)
 destroyable(s2)
+destroyable(secure)
 
 function local (path) {
   return 'http://localhost:' + s.address().port + path
@@ -86,7 +100,9 @@ function local (path) {
 tape('setup', function (t) {
   s.listen(0, function () {
     s2.listen(0, function () {
-      t.end()
+      secure.listen(0, function () {
+        t.end()
+      })
     })
   })
 })
@@ -199,10 +215,24 @@ tape('after another host a redirect on that host keeps the Cookie header of the 
   })
 })
 
+tape('a Secure jar cookie does not follow a redirect from https to http on the same host', function (t) {
+  var jar = request.jar()
+  var url = 'https://localhost:' + secure.address().port + '/login'
+  jar.setCookie('sid=1; Secure', url)
+  hops = []
+  request({url: url, ca: ca, jar: jar, headers: {cookie: 'manual=1'}}, function (err, res, body) {
+    t.equal(err, null)
+    t.deepEqual(hops, ['https manual=1; sid=1', 'localhost:other-port manual=1'])
+    t.end()
+  })
+})
+
 tape('cleanup', function (t) {
   s.destroy(function () {
     s2.destroy(function () {
-      t.end()
+      secure.destroy(function () {
+        t.end()
+      })
     })
   })
 })
