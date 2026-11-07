@@ -35,6 +35,42 @@ var s = http.createServer(function (req, res) {
     res.writeHead(302, {location: 'http://localhost:' + s.address().port + '/challenge'})
     return res.end()
   }
+  if (req.url === '/bounce-other-port') {
+    res.writeHead(302, {location: 'http://127.0.0.1:' + s.address().port + '/back-other-port'})
+    return res.end()
+  }
+  if (req.url === '/back-other-port') {
+    res.writeHead(302, {location: 'http://localhost:' + s2.address().port + '/challenge'})
+    return res.end()
+  }
+  if (req.url === '/to-userinfo') {
+    res.writeHead(302, {location: 'http://other:secret@127.0.0.1:' + s.address().port + '/userinfo-start'})
+    return res.end()
+  }
+  if (req.url === '/userinfo-start') {
+    res.writeHead(302, {location: 'http://127.0.0.1:' + s.address().port + '/userinfo-next'})
+    return res.end()
+  }
+  if (req.url === '/userinfo-next') {
+    challenges.push(req.headers.host.split(':')[0] + ' ' + (req.headers.authorization || '-'))
+    return res.end()
+  }
+  if (req.url === '/leave') {
+    res.writeHead(302, {location: 'http://127.0.0.1:' + s.address().port + '/return'})
+    return res.end()
+  }
+  if (req.url === '/return') {
+    res.writeHead(302, {location: local('/challenge-then-away')})
+    return res.end()
+  }
+  if (req.url === '/challenge-then-away') {
+    if (!req.headers.authorization) {
+      res.writeHead(401, {'www-authenticate': 'Basic realm="test"'})
+      return res.end()
+    }
+    res.writeHead(302, {location: 'http://localhost:' + s2.address().port + '/plain'})
+    return res.end()
+  }
   if (req.url === '/challenge') {
     challenges.push(req.headers.host.split(':')[0] + ' ' + (req.headers.authorization || '-'))
     if (!req.headers.authorization) {
@@ -45,10 +81,20 @@ var s = http.createServer(function (req, res) {
   res.end(req.headers.authorization || '(none)')
 })
 
+var s2 = http.createServer(function (req, res) {
+  challenges.push(req.headers.host.split(':')[0] + ':other-port ' + (req.headers.authorization || '-'))
+  if (!req.headers.authorization) {
+    res.writeHead(401, {'www-authenticate': 'Basic realm="test"'})
+    return res.end()
+  }
+  res.end(req.headers.authorization)
+})
+
 var challenges = []
 var credentials = {user: 'user', pass: 'pass', sendImmediately: false}
 
 destroyable(s)
+destroyable(s2)
 
 function local (path) {
   return 'http://localhost:' + s.address().port + path
@@ -56,7 +102,9 @@ function local (path) {
 
 tape('setup', function (t) {
   s.listen(0, function () {
-    t.end()
+    s2.listen(0, function () {
+      t.end()
+    })
   })
 })
 
@@ -122,8 +170,49 @@ tape('a 401 challenge back on the first host gets the credentials again', functi
   })
 })
 
+tape('a 401 challenge back on the first host but on another port does not get the credentials', function (t) {
+  challenges = []
+  request({url: local('/bounce-other-port'), auth: credentials}, function (err, res) {
+    t.equal(err, null)
+    t.equal(res.statusCode, 401)
+    t.deepEqual(challenges, ['localhost:other-port -'])
+    t.end()
+  })
+})
+
+tape('basic auth sent immediately does not reach the first host on another port after another host', function (t) {
+  challenges = []
+  request({url: local('/bounce-other-port'), auth: {user: 'user', pass: 'pass'}}, function (err, res) {
+    t.equal(err, null)
+    t.equal(res.statusCode, 401)
+    t.deepEqual(challenges, ['localhost:other-port -'])
+    t.end()
+  })
+})
+
+tape('after another host the Authorization header of the first host does not reach its other port', function (t) {
+  challenges = []
+  request({url: local('/leave'), auth: credentials}, function (err, res) {
+    t.equal(err, null)
+    t.equal(res.statusCode, 401)
+    t.deepEqual(challenges, ['localhost:other-port -'])
+    t.end()
+  })
+})
+
+tape('credentials from the userinfo of a Location stay on later redirects within that host, as in 2.88.2', function (t) {
+  challenges = []
+  request({url: local('/to-userinfo')}, function (err, res) {
+    t.equal(err, null)
+    t.deepEqual(challenges, ['127.0.0.1 Basic b3RoZXI6c2VjcmV0'])
+    t.end()
+  })
+})
+
 tape('cleanup', function (t) {
   s.destroy(function () {
-    t.end()
+    s2.destroy(function () {
+      t.end()
+    })
   })
 })
