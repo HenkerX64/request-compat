@@ -5,7 +5,11 @@ var tape = require('tape')
 var request = require('../index')
 var destroyable = require('server-destroy')
 
+var tokens = []
 var s = http.createServer(function (req, res) {
+  if (req.headers['x-amz-security-token']) {
+    tokens.push(req.headers.host.split(':')[0] + ' ' + req.headers['x-amz-security-token'])
+  }
   var other = 'http://127.0.0.1:' + s.address().port + '/landing'
   if (req.url === '/307-to-other') {
     res.writeHead(307, {location: other})
@@ -190,9 +194,48 @@ tape('basic auth sent immediately does not reach the first host on another port 
   })
 })
 
+tape('a redirect to another host does not get an aws signature', function (t) {
+  request({url: local('/302-to-other'), aws: {key: 'AKIDEXAMPLE', secret: 'secret'}}, function (err, res, body) {
+    t.equal(err, null)
+    t.equal(body, '(none)')
+    t.end()
+  })
+})
+
+tape('an aws signature is made again back on the first host', function (t) {
+  challenges = []
+  request({url: local('/bounce'), aws: {key: 'AKIDEXAMPLE', secret: 'secret'}}, function (err, res) {
+    t.equal(err, null)
+    t.equal(res.statusCode, 200)
+    t.equal(challenges.length, 1)
+    t.ok(/^localhost AWS AKIDEXAMPLE:/.test(challenges[0]))
+    t.end()
+  })
+})
+
+tape('a redirect to another host does not get the aws session token', function (t) {
+  tokens = []
+  request({url: local('/302-to-other'), aws: {key: 'AKIDEXAMPLE', secret: 'secret', session: 'SESSIONTOKEN', sign_version: 4, service: 's3'}}, function (err, res, body) {
+    t.equal(err, null)
+    t.equal(body, '(none)')
+    t.deepEqual(tokens, ['localhost SESSIONTOKEN'])
+    t.end()
+  })
+})
+
 tape('after another host the Authorization header of the first host does not reach its other port', function (t) {
   challenges = []
   request({url: local('/leave'), auth: credentials}, function (err, res) {
+    t.equal(err, null)
+    t.equal(res.statusCode, 401)
+    t.deepEqual(challenges, ['localhost:other-port -'])
+    t.end()
+  })
+})
+
+tape('after another host the aws signature of the first host does not reach its other port', function (t) {
+  challenges = []
+  request({url: local('/leave'), aws: {key: 'AKIDEXAMPLE', secret: 'secret'}}, function (err, res) {
     t.equal(err, null)
     t.equal(res.statusCode, 401)
     t.deepEqual(challenges, ['localhost:other-port -'])
