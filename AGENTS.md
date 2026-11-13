@@ -27,7 +27,12 @@ people and agents. A change that breaks one of them is not committed.
    behaviour is a real need, the fix may add one opt-in option for it (like
    `allowInsecureRedirect`).
 5. **No features.** No new options, capabilities or defaults, except the
-   opt-in options allowed by law 4.
+   opt-in options allowed by law 4. `lib/api.js` (the API factory) and
+   `lib/transport/` (the transport contract and its Node implementation)
+   exist so that request-compat engine packages can run this core on
+   another HTTP client. They are internal: no option, method, event or
+   default is added to `request()`, and the Node transport keeps every
+   behaviour of 2.88.2.
 6. **Bug scope.** A bug that is not a security hole is fixed only if a
    `request` fork (cypress-io/request, postmanlabs/postman-request) or Node
    itself already fixed it, or if `request` behaves differently on a newer

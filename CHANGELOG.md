@@ -1,5 +1,8 @@
 ## Change Log
 
+### v2.88.6 (2026/11/13)
+- Let engine packages such as request-compat-undici run this core on another HTTP client through an internal transport contract; `request()` behaves as before (@HenkerX64)
+
 ### v2.88.5 (2026/11/06)
 - RC-11 A request with its own `checkServerIdentity` no longer reuses a keep-alive socket or TLS session that another request opened without that check, so its check runs; with an agent passed by the caller only the TLS session reuse stops (RC-13); Node fixed the same hole as CVE-2026-58040 in 22.23.2, 24.18.1 and 26.5.1 (@HenkerX64)
 - request-#2964 Run a `checkServerIdentity` of `agentOptions` or of the request although the pool already holds an agent for the host without it or with another check, and run Node's default check for a request without one on an agent that another request created with a check (@HenkerX64)
