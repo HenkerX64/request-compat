@@ -2,7 +2,6 @@
 
 var http = require('http')
 var https = require('https')
-var tls = require('tls')
 var url = require('url')
 var util = require('util')
 var stream = require('stream')
@@ -12,7 +11,6 @@ var aws4 = require('aws4')
 var httpSignature = require('http-signature')
 var mime = require('mime-types')
 var caseless = require('caseless')
-var ForeverAgent = require('forever-agent')
 var FormData = require('form-data')
 var extend = require('extend')
 var isstream = require('isstream')
@@ -29,6 +27,7 @@ var hawk = require('./lib/hawk')
 var Multipart = require('./lib/multipart').Multipart
 var Redirect = require('./lib/redirect').Redirect
 var Tunnel = require('./lib/tunnel').Tunnel
+var transports = require('./lib/transport')
 var now = require('performance-now')
 var Buffer = require('safe-buffer').Buffer
 
@@ -37,7 +36,6 @@ var isReadStream = helpers.isReadStream
 var toBase64 = helpers.toBase64
 var defer = helpers.defer
 var copy = helpers.copy
-var version = helpers.version
 var globalCookieJar = cookies.jar()
 
 var globalPool = {}
@@ -92,54 +90,6 @@ function responseToJSON () {
   }
 }
 
-function customCheckServerIdentity (check) {
-  return typeof check === 'function' && check !== tls.checkServerIdentity ? check : undefined
-}
-
-function ownCheckServerIdentity (request) {
-  return customCheckServerIdentity((request.agentOptions && request.agentOptions.checkServerIdentity) || request.checkServerIdentity)
-}
-
-function agentCheckServerIdentity (agent) {
-  return customCheckServerIdentity(agent && agent.options && agent.options.checkServerIdentity)
-}
-
-function isPlainAgent (agent, Agent) {
-  return Boolean(Agent) && Object.getPrototypeOf(agent) === Agent.prototype &&
-    !Object.prototype.hasOwnProperty.call(agent, 'createConnection') &&
-    !Object.prototype.hasOwnProperty.call(agent, 'addRequest')
-}
-
-function sharedTlsAgent (request) {
-  var agent = request.agent
-  var httpModule = request.httpModule
-  var httpsModule = (request.httpModules && request.httpModules['https:']) || https
-  if (!agent || !agent.options || httpModule !== httpsModule) {
-    return null
-  }
-  if (agent === httpModule.globalAgent) {
-    return isPlainAgent(agent, httpModule.Agent) && !agentCheckServerIdentity(agent) ? agent : null
-  }
-  for (var key in request.pool) {
-    if (request.pool[key] === agent) {
-      return agent
-    }
-  }
-  return null
-}
-
-function isolatedAgent (agent, check) {
-  var options = extend({}, agent.options, {keepAlive: false, checkServerIdentity: check})
-  if (!check) {
-    delete options.checkServerIdentity
-  }
-  try {
-    return new agent.constructor(options)
-  } catch (err) {
-    return null
-  }
-}
-
 function Request (options) {
   // if given the method property in options, set property explicitMethod to true
 
@@ -158,6 +108,11 @@ function Request (options) {
 
   stream.Stream.call(self)
   var reserved = Object.keys(Request.prototype)
+  for (var proto = Object.getPrototypeOf(self); proto && proto !== Request.prototype; proto = Object.getPrototypeOf(proto)) {
+    if (Object.prototype.hasOwnProperty.call(proto, transports.key)) {
+      reserved = reserved.concat(Object.keys(proto))
+    }
+  }
   var nonReserved = filterForNonReserved(reserved, options)
 
   extend(self, nonReserved)
@@ -187,6 +142,7 @@ function debug () {
   }
 }
 Request.prototype.debug = debug
+Request.prototype[transports.key] = transports.node
 
 Request.prototype.init = function (options) {
   // init() contains all the code to setup the request object.
@@ -516,35 +472,7 @@ Request.prototype.init = function (options) {
     self.ca = options.ca
   }
 
-  if (!self.agent) {
-    if (options.agentOptions) {
-      self.agentOptions = options.agentOptions
-    }
-
-    if (options.agentClass) {
-      self.agentClass = options.agentClass
-    } else if (options.forever) {
-      var v = version()
-      // use ForeverAgent in node 0.10- only
-      if (v.major === 0 && v.minor <= 10) {
-        self.agentClass = protocol === 'http:' ? ForeverAgent : ForeverAgent.SSL
-      } else {
-        self.agentClass = self.httpModule.Agent
-        self.agentOptions = self.agentOptions || {}
-        self.agentOptions.keepAlive = true
-      }
-    } else {
-      self.agentClass = self.httpModule.Agent
-    }
-  }
-
-  if (self.pool === false) {
-    if (!self.tunnel || !self.proxy) {
-      self.agent = false
-    }
-  } else {
-    self.agent = self.agent || self.getNewAgent()
-  }
+  self[transports.key].prepare(self, options)
 
   self.on('pipe', function (src) {
     if (self.ntick && self._started) {
@@ -822,18 +750,6 @@ Request.prototype.start = function () {
   // auth option.  If we don't remove it, we're gonna have a bad time.
   var reqOptions = copy(self)
   delete reqOptions.auth
-  var check = ownCheckServerIdentity(self)
-  var agentCheck = agentCheckServerIdentity(self.agent)
-  if (check !== agentCheck) {
-    var shared = sharedTlsAgent(self)
-    var isolated = shared && isolatedAgent(shared, check)
-    if (isolated) {
-      reqOptions.agent = isolated
-    }
-    if (check && !('session' in reqOptions) && (shared || !agentCheck)) {
-      reqOptions.session = undefined
-    }
-  }
 
   debug('make request', self.uri.href)
 
@@ -843,7 +759,7 @@ Request.prototype.start = function () {
   delete reqOptions.timeout
 
   try {
-    self.req = self.httpModule.request(reqOptions)
+    self.req = self[transports.key].send(self, reqOptions)
   } catch (err) {
     self.emit('error', err)
     return
@@ -873,9 +789,7 @@ Request.prototype.start = function () {
     self.emit('drain')
   })
 
-  self.req.on('socket', function (socket) {
-    // `._connecting` was the old property which was made public in node v6.1.0
-    var isConnecting = socket._connecting || socket.connecting
+  var onConnection = function (socket, publicSocket, isConnecting) {
     if (self.timing) {
       self.timings.socket = now() - self.startTimeNow
 
@@ -950,7 +864,16 @@ Request.prototype.start = function () {
         setReqTimeout()
       }
     }
-    self.emit('socket', socket)
+    if (publicSocket) {
+      self.emit('socket', publicSocket)
+    }
+  }
+
+  self.req.on('connecting', function (socket, publicSocket) {
+    onConnection(socket, publicSocket, true)
+  })
+  self.req.on('reused', function (publicSocket) {
+    onConnection(null, publicSocket, false)
   })
 
   self.emit('request', self.req)
@@ -1034,13 +957,10 @@ Request.prototype.onRequestResponse = function (response) {
   response.request = self
   response.toJSON = responseToJSON
 
-  // XXX This is different on 0.10, because SSL is strict by default
-  if (self.httpModule === https &&
-    self.strictSSL && (!response.hasOwnProperty('socket') ||
-    !response.socket.authorized)) {
+  var tlsError = self[transports.key].verifyResponse(self, response)
+  if (tlsError) {
     debug('strict ssl error', self.uri.href)
-    var sslErr = response.hasOwnProperty('socket') ? response.socket.authorizationError : self.uri.href + ' does not support SSL'
-    self.emit('error', new Error('SSL Error: ' + sslErr))
+    self.emit('error', tlsError)
     return
   }
 
