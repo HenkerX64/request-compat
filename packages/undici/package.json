@@ -1,0 +1,47 @@
+{
+  "name": "request-compat-undici",
+  "version": "1.0.0-beta.0",
+  "description": "request-compat on undici: the same request API and behaviour with undici as the HTTP client.",
+  "keywords": [
+    "request",
+    "undici",
+    "http",
+    "https",
+    "drop-in",
+    "replacement",
+    "deprecated",
+    "migration",
+    "compat",
+    "request-promise",
+    "overrides"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/HenkerX64/request-compat/tree/master/packages/undici#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HenkerX64/request-compat.git",
+    "directory": "packages/undici"
+  },
+  "bugs": {
+    "url": "https://github.com/HenkerX64/request-compat/issues"
+  },
+  "main": "index.js",
+  "files": [
+    "CHANGELOG.md",
+    "index.js",
+    "lib/"
+  ],
+  "dependencies": {
+    "request-compat": "2.88.6",
+    "undici": "8.12.4"
+  },
+  "engines": {
+    "node": ">=22.19"
+  },
+  "publishConfig": {
+    "tag": "next"
+  },
+  "scripts": {
+    "test": "make -C ../.. test-undici"
+  }
+}

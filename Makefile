@@ -9,6 +9,7 @@ SHELL := /bin/sh
 .ONESHELL:
 
 VERSIONS ?= $(shell tr -d '\r' < .github/workflows/test.yml | sed -n 's/^ *node: \[\(.*\)\]$$/\1/p' | tr -d ',')
+UNDICI_VERSIONS ?= $(shell tr -d '\r' < .github/workflows/test.yml | sed -n 's/^ *undici-node: \[\(.*\)\]$$/\1/p' | tr -d ',')
 NPM_INSTALL := npm install --ignore-scripts --no-package-lock --no-audit --no-fund --legacy-peer-deps --loglevel=error
 
 # $(call in_node,<node version>,<npm scripts>): copy the repository without
@@ -23,13 +24,16 @@ endef
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install test lint test-cov check-original-tests test-in-docker lint-in-docker release-notes publish
+.PHONY: help install install-undici test test-undici lint test-cov check-original-tests test-in-docker test-undici-in-docker lint-in-docker release-notes publish
 
 help: ## this list
 	@awk '/^[a-z][a-zA-Z0-9_-]*:/ { name = substr($$0, 1, index($$0, ":") - 1); text = index($$0, "## ") ? substr($$0, index($$0, "## ") + 3) : ""; printf "make %-22s %s\n", name, text }' $(firstword $(MAKEFILE_LIST))
 
 install: ## install the dependencies like CI does
 	$(NPM_INSTALL)
+
+install-undici: ## install the undici engine package with the core linked from this checkout
+	@cd packages/undici && npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund --loglevel=error ../..
 
 # Node 16 and older are built with OpenSSL 1.x and fail on the OpenSSL 3
 # configuration of current Linux systems ("DSO support routines"); they get
@@ -39,6 +43,10 @@ test: ## tests on the Node you have, like each CI job
 	  export OPENSSL_CONF=/dev/null
 	fi
 	npm run test-ci
+
+test-undici: ## engine tests and the core suite through undici on the Node you have (>= 22.19)
+	@node node_modules/tape/bin/tape 'packages/undici/tests/test-*.js'
+	node packages/undici/tests/run-core-suite.js
 
 lint: ## lint, like CI
 	npm run lint
@@ -60,6 +68,19 @@ test-in-docker: ## tests in node:<version> containers; VERSIONS="6 26", default:
 	for version in $(VERSIONS); do
 	  echo "== node:$$version"
 	  $(call in_node,$$version,test-ci) || status=1
+	done
+	exit $$status
+
+test-undici-in-docker: ## test-undici in node:<version> containers; UNDICI_VERSIONS="22 26"
+	@test -n "$(strip $(UNDICI_VERSIONS))" || { echo 'no Node versions: set UNDICI_VERSIONS or check the undici-node matrix in .github/workflows/test.yml'; exit 2; }
+	status=0
+	for version in $(UNDICI_VERSIONS); do
+	  echo "== node:$$version"
+	  docker run --rm -v "$(CURDIR):/src:ro" "node:$$version" sh -ec '
+	    mkdir /app && tar -C /src --exclude=./node_modules --exclude=./packages/undici/node_modules -cf - . | tar -C /app -xf - && cd /app
+	    node -v && npm -v
+	    $(NPM_INSTALL)
+	    make install-undici test-undici' || status=1
 	done
 	exit $$status
 

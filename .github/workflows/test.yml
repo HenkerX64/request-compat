@@ -27,6 +27,22 @@ jobs:
       - run: make install
       - run: make test
 
+  undici:
+    name: undici engine on Node.js ${{ matrix.undici-node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        undici-node: [22, 24, 26]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.undici-node }}
+      - run: make install
+      - run: make install-undici
+      - run: make test-undici
+
   lint:
     name: Lint and original tests
     runs-on: ubuntu-latest

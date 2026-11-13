@@ -1,0 +1,202 @@
+[
+  {
+    "file": "test-agent.js",
+    "test": "options.agent",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in undici (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-agent.js",
+    "test": "options.agentClass + options.agentOptions",
+    "reason": "agentClass: refused with OPTION_NOT_SUPPORTED (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-agent.js",
+    "test": "options.forever = true",
+    "reason": "agent: r.agent is not set, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest and r.agent is not set)"
+  },
+  {
+    "file": "test-agent.js",
+    "test": "forever() method",
+    "reason": "agent: r.agent is not set, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest and r.agent is not set)"
+  },
+  {
+    "file": "test-agentOptions.js",
+    "test": "with agentOptions should apply to new agent in pool",
+    "reason": "agentOptions.foo: refused with OPTION_NOT_SUPPORTED, a key without an undici equivalent (test-differences.js: an agentOptions key without an undici equivalent is refused, also with pool: false and through a tunnel, where Node ignores it)"
+  },
+  {
+    "file": "test-agentOptions.js",
+    "test": "without agentOptions should use global agent",
+    "reason": "agent: r.agent is not set, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest and r.agent is not set)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "checkServerIdentity runs on a caller agent whose TLS session an earlier request opened",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in undici (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "checkServerIdentity runs with an https module passed in httpModules",
+    "reason": "httpModules: refused with OPTION_NOT_SUPPORTED (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "requests without checkServerIdentity keep reusing the pooled keep-alive socket",
+    "reason": "pool: connections are shared per TLS context, not per pool object, so the connection count differs (test-differences.js: separate pool objects share the keep-alive connections of one TLS context)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "a checkServerIdentity set on the agent keeps reusing the keep-alive socket",
+    "reason": "checkServerIdentity: a request with its own check gets a connection of its own, also with the check in agentOptions, so no keep-alive reuse (test-differences.js: a checkServerIdentity in agentOptions gets a connection of its own on every request)"
+  },
+  {
+    "file": "test-content-length-no-body.js",
+    "test": "DELETE without a body sends 0 for a content-length of the caller, as in 2.88.2",
+    "reason": "content-length: undici sends no content-length for DELETE and OPTIONS without a body (test-differences.js: no content-length without a body for DELETE, OPTIONS and GET, also when the caller sets one)"
+  },
+  {
+    "file": "test-content-length-no-body.js",
+    "test": "OPTIONS without a body sends 0 for a content-length of the caller, as in 2.88.2",
+    "reason": "content-length: undici sends no content-length for DELETE and OPTIONS without a body (test-differences.js: no content-length without a body for DELETE, OPTIONS and GET, also when the caller sets one)"
+  },
+  {
+    "file": "test-form-data-error.js",
+    "test": "omit content-length header if the value is set to NaN",
+    "reason": "response: form-data reads response.client._httpMessage.path of a response used as a formData value and throws a TypeError, the engine response has no socket (test-differences.js: a response used as a formData value makes form-data throw, as form-data reads the socket of a Node response)"
+  },
+  {
+    "file": "test-form-data.js",
+    "test": "multipart formData + basic auth over a keep-alive agent",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in undici (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-headers.js",
+    "test": "upper-case Host header and redirect",
+    "reason": "Host header case: undici writes host in lower case (test-differences.js: host and connection are written in lower case, other names keep the case of the caller)"
+  },
+  {
+    "file": "test-httpModule.js",
+    "test": "empty",
+    "reason": "httpModules: refused with OPTION_NOT_SUPPORTED (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-httpModule.js",
+    "test": "http only",
+    "reason": "httpModules: refused with OPTION_NOT_SUPPORTED (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-httpModule.js",
+    "test": "https only",
+    "reason": "httpModules: refused with OPTION_NOT_SUPPORTED (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-httpModule.js",
+    "test": "http and https",
+    "reason": "httpModules: refused with OPTION_NOT_SUPPORTED (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-pool-inline-agent-options.js",
+    "test": "requests with an inline checkServerIdentity share one pooled agent",
+    "reason": "pool: the engine does not fill the pool object of the caller with agents (test-differences.js: the pool object of the caller stays empty, Node fills it with its agents)"
+  },
+  {
+    "file": "test-pool-passphrase.js",
+    "test": "a pooled agent is not reused for a request with another passphrase",
+    "reason": "pool: the engine does not fill the pool object of the caller with agents (test-differences.js: the pool object of the caller stays empty, Node fills it with its agents)"
+  },
+  {
+    "file": "test-pool.js",
+    "test": "forever",
+    "reason": "agent: r.agent is not set, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest and r.agent is not set)"
+  },
+  {
+    "file": "test-pool.js",
+    "test": "forever, should use same agent in sequential requests",
+    "reason": "agent: r.agent is not set, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest and r.agent is not set)"
+  },
+  {
+    "file": "test-pool.js",
+    "test": "forever, should use same agent in sequential requests(with pool.maxSockets)",
+    "reason": "agent: r.agent is not set, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest and r.agent is not set)"
+  },
+  {
+    "file": "test-pool.js",
+    "test": "forever, should use same agent in request() and request.verb",
+    "reason": "agent: r.agent is not set, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest and r.agent is not set)"
+  },
+  {
+    "file": "test-pool.js",
+    "test": "should use different agent if pool option specified",
+    "reason": "agent: r.agent is not set, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest and r.agent is not set)"
+  },
+  {
+    "file": "test-pool.js",
+    "test": "pool",
+    "reason": "agent: r.agent is not set, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest and r.agent is not set)"
+  },
+  {
+    "file": "test-proxy-connect.js",
+    "test": "proxy",
+    "reason": "proxy: the CONNECT request has undici's header names and order, host without the default port and proxy-connection: keep-alive; the test matches the exact text of tunnel-agent (test-differences.js: CONNECT to the proxy: host without the default port, proxy-connection: keep-alive, names and order of undici)"
+  },
+  {
+    "file": "test-redirect-hop-cleanup.js",
+    "test": "redirect keeps a completed hop socket reusable",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in undici (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-redirect-proxy-agent.js",
+    "test": "https to http redirect through a proxy with a caller agent is followed through the proxy",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in undici (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-redirect-proxy-agent.js",
+    "test": "https to http redirect without a proxy keeps a caller agent and fails",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in undici (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-redirect.js",
+    "test": "http to https redirect replaces a caller agent with the \"allowInsecureRedirect\" option",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in undici (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-redirect.js",
+    "test": "should use same agent class on redirect",
+    "reason": "agentClass: refused with OPTION_NOT_SUPPORTED (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-redirect.js",
+    "test": "http to https redirect keeps a caller agent and fails without the explicit \"allowInsecureRedirect\" option",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in undici (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-redirect.js",
+    "test": "http to https redirect keeps a caller agentClass and fails without the explicit \"allowInsecureRedirect\" option",
+    "reason": "agentClass: refused with OPTION_NOT_SUPPORTED (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-timeout.js",
+    "test": "request timeout with keep-alive connection",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in undici (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-timing.js",
+    "test": "keepAlive is timed",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in undici (test-api.js: options the engine cannot honour are refused from send)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "http over https, tunnel=true",
+    "reason": "proxy: the proxy of an https proxy tunnel is checked against the default trust store only, as in Node (test-tls-parity.js: TLS parity: https proxy tunnel: the default trust rejects the proxy); the core test adds its CA by patching https.request, which undici does not use"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https over https, tunnel=true",
+    "reason": "proxy: the proxy of an https proxy tunnel is checked against the default trust store only, as in Node (test-tls-parity.js: TLS parity: https proxy tunnel: the default trust rejects the proxy); the core test adds its CA by patching https.request, which undici does not use"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https over https, tunnel=default",
+    "reason": "proxy: the proxy of an https proxy tunnel is checked against the default trust store only, as in Node (test-tls-parity.js: TLS parity: https proxy tunnel: the default trust rejects the proxy); the core test adds its CA by patching https.request, which undici does not use"
+  }
+]
