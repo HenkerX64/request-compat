@@ -181,6 +181,7 @@ Known issues that stay as in 2.88.2 are listed in
   authentication, proxies, TLS, all options, convenience methods, examples
 - [CHANGELOG.md](CHANGELOG.md): every change on top of request 2.88.2
 - [docs/tracker.md](docs/tracker.md): planned, known and rejected problems
+- [packages/undici](packages/undici/README.md): request-compat-undici, the same core on undici (beta)
 - [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md): how
   changes are made and the rules they follow
 

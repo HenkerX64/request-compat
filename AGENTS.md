@@ -32,7 +32,11 @@ people and agents. A change that breaks one of them is not committed.
    exist so that request-compat engine packages can run this core on
    another HTTP client. They are internal: no option, method, event or
    default is added to `request()`, and the Node transport keeps every
-   behaviour of 2.88.2.
+   behaviour of 2.88.2. An engine package in `packages/` may accept the
+   options of its own HTTP client (request-compat-undici: `dispatcher`, an
+   undici Dispatcher). Such an option exists only in that package; a
+   combination it cannot honour is refused with `OPTION_NOT_SUPPORTED`,
+   never silently ignored. The core gets no new option.
 6. **Bug scope.** A bug that is not a security hole is fixed only if a
    `request` fork (cypress-io/request, postmanlabs/postman-request) or Node
    itself already fixed it, or if `request` behaves differently on a newer

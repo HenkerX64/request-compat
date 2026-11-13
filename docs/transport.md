@@ -25,7 +25,8 @@ internal transport contract.
 
 ## Non-goals
 
-- No public API change: no new option, method, event or default for `request()` users.
+- No public API change for users of request-compat: no new option, method, event or default for
+  `request()`; an engine package may take options of its own HTTP client.
 - No TypeScript or new build step in the core; the core stays ES5 for Node 6.
 - No capability system, handshake or plugin registry; one contract, sized by what the core uses.
 - No emulation of Node's socket or agent objects in engines.
@@ -33,7 +34,8 @@ internal transport contract.
 ## Laws
 
 Law 5 in `AGENTS.md` allows `lib/api.js` and `lib/transport/` as internal modules. Nothing in this
-design adds to the public API of `request()`.
+design adds to the public API of the core's `request()`; law 5 lets an engine package take options
+of its own HTTP client.
 
 ## The contract
 
@@ -88,8 +90,11 @@ listener for it exists, Node hands the socket to that listener instead of closin
 The core's timeout and timing code (`request.js:792-877`) listens to these events instead of
 the socket; the `ETIMEDOUT` (`connect: true`) and `ESOCKETTIMEDOUT` codes and the timing fields stay
 in the core. The core emits the public `socket` event of a request only when the transport passes a
-`socket`, so for the Node transport the event and `r.req.socket` stay exactly as in 2.88.2. Other
-transports pass none and emit no `socket` event; that difference is documented per engine.
+`socket`, so for the Node transport the event and `r.req.socket` stay exactly as in 2.88.2. An
+engine passes the real socket its HTTP client runs the exchange on, never a wrapper, and passes
+none where it has none; such a request emits no `socket` event. The undici engine passes undici's
+`net.Socket` or `tls.TLSSocket` and sets `r.req.socket` to it; it has none through a tunnel to an
+https target and with a caller's `dispatcher`, documented in its README.
 
 Code that stays Node-only and is guarded, not moved: the ForeverAgent retry on a reused socket
 (`request.js:887`, needs `self.agent.addRequestNoreuse`), and the caller-agent rule on redirects
@@ -115,25 +120,49 @@ transport itself sits under a Symbol key, which options never reach.
 
 - Same repository, `packages/undici/` (own `package.json`, own CI job on Node 22, 24, 26), npm name
   `request-compat-undici`, own semver starting at 1.0.0, dependency on `request-compat` with the
-  range of the core release that ships the contract, dependency `undici` `^8.12.4` (8.12.2+
-  fixes GHSA-2m5v-pch6-74hx), `engines.node` `>=22.19`.
+  range of the core release that ships the contract, dependency `undici` exactly `8.12.4` (8.12.2+
+  fixes GHSA-2m5v-pch6-74hx; the engine depends on its message text and call order),
+  `engines.node` `>=22.19`.
 - Releases start as `1.0.0-beta.0` with dist-tag `next`; `latest` follows once the A/B harness of
   real dependents passes on the engine.
-- Consumers: `"request": "npm:request-compat-undici@^1"` plus `"overrides": { "request": "$request" }`.
+- Consumers: `"request": "npm:request-compat-undici@next"` during the beta (a range like `^1` does
+  not match a prerelease), `"npm:request-compat-undici@^1"` from 1.0.0 on, plus
+  `"overrides": { "request": "$request" }`.
 - TLS: one undici dispatcher per TLS context (ca, cert, key, pfx, passphrase, rejectUnauthorized,
   servername, checkServerIdentity by identity, proxy), so connections and sessions are never shared
   across contexts. Proxy: the core resolves the proxy (options, environment, NO_PROXY); the engine
   sends forwarded requests to the proxy itself and opens tunnels through undici `ProxyAgent`;
   tunnel-agent is not used.
 - Unsupported options are refused with `OPTION_NOT_SUPPORTED` and the option name: a caller's Node
-  `agent` instance, `agentClass`, `httpModules`. The refusal is thrown from `send`, which reaches the
-  caller as an `error` event; never from `tunnel` or `prepare`.
-- Known engine differences, documented in `packages/undici/README.md` and kept as tests: lowercase
-  header names, no `content-length: 0` on DELETE without a
-  body, bytes after a CONNECT 200, error text for invalid header characters, no `socket` event.
+  `agent` instance, `agentClass`, `httpModules`, a `pool` that holds Node agents, the request, socket
+  and TLS options of Node that undici cannot take (`lookup`, `signal`, `socket`, `localPort`,
+  `session`, `ALPNProtocols`, ...), `agentOptions` keys without an undici equivalent
+  (`agentOptions.<key>`), and, where Node would use its global agent, every key of
+  `http.globalAgent.options` or `https.globalAgent.options` that differs from that agent's default and
+  is not mirrored, including the proxy of `NODE_USE_ENV_PROXY` when the request has no proxy. The
+  refusal is thrown from `send`, which reaches the caller as an `error` event; never from `tunnel` or
+  `prepare`. The full table is in the package README.
+- `dispatcher` (only in this package, law 5): the caller's undici `Dispatcher` (handler API of
+  undici 7 and later). Every hop of the request, redirects included, goes through it, and the engine
+  opens no dispatcher of its own; `request.defaults({dispatcher})` gives an API instance on one
+  dispatcher. The dispatcher decides proxy, connections and TLS, so the engine refuses what it would
+  otherwise drop: a proxy from the options or the environment (`proxy: null` leaves the proxy to the
+  dispatcher), `pool`, `agent: false`, `forever`, `agentOptions`, `localAddress`, `family`,
+  `servername`, unix socket URLs, `maxHeaderSize` and every TLS option of the request (`strictSSL`,
+  `rejectUnauthorized`, `ca`, ...). The global agents' options do not apply, as with a caller's
+  agent in Node. A value without a `dispatch` function is a `TypeError` with
+  `code: 'INVALID_DISPATCHER'`. The exchange emits `connecting` without a socket right after the
+  dispatch, so the request emits no `socket` event, and `connect` when the dispatcher starts the
+  request, so the connect timeout also covers the wait for a connection and `timings.lookup` equals
+  `timings.connect`.
+- Known engine differences, documented in `packages/undici/README.md` and kept as tests, among
+  them: `host` and `connection` in lower case and written first, no `content-length` on a DELETE,
+  OPTIONS or GET without a body, no `socket` event through a tunnel to an https target or with a
+  `dispatcher`, keep-alive where Node's pool agents close.
+  The full list is in the package README.
 - Proof: the core suite runs through the engine with an expected-failures list (each entry names
-  the difference above it stems from), the proof-of-concept scenarios become tests, and the A/B
-  harness of real dependents runs on the engine.
+  the test that pins its difference), the proof-of-concept scenarios are tests
+  (`tests/test-scenarios.js`), and the A/B harness of real dependents runs on the engine.
 
 ## Order of work
 
@@ -144,7 +173,8 @@ transport itself sits under a Symbol key, which options never reach.
    transport takes over first; `tunnel` joined the contract in (b).
 2. `packages/undici`: the proof-of-concept adapter rewritten against the contract, the
    expected-failures list, CI job, README with the compatibility table; first release
-   `1.0.0-beta.0` with dist-tag `next`.
+   `1.0.0-beta.0` with dist-tag `next`. Done up to the release in "Added the undici engine package
+   request-compat-undici"; `1.0.0-beta.0` is published after the core 2.88.6.
 3. No got package: got runs on Node's `http`, so it adds little over the Node transport; another
    engine package follows only for a capability Node's `http` lacks.
 
@@ -152,9 +182,13 @@ transport itself sits under a Symbol key, which options never reach.
 
 - Lifecycle events instead of a narrower callback API, because the Node transport can produce them
   from today's socket events with no behaviour change.
-- The transport is bound per API instance (subclass), not per request option, so no option is added.
+- The transport is bound per API instance (subclass), not per request option, so the core adds no
+  option.
 - `packages/undici` lives in this repository, so the core suite and the engine run in one CI and one
   review.
 - Engine version 1.x, independent of undici's major.
 - Refusals are thrown from `send` (2026-11-09): one path for every hop, no deferred error that could
   race a fast response or outlive an `abort()`.
+- During the beta the engine depends on exactly the core it is tested with (`"request-compat":
+  "2.88.6"`), not on a range (2026-11-12): a range would combine an engine with a core no CI run
+  has seen. A core release therefore comes with an engine prerelease that moves the pin.
