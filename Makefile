@@ -11,6 +11,7 @@ SHELL := /bin/sh
 VERSIONS ?= $(shell tr -d '\r' < .github/workflows/test.yml | sed -n 's/^ *node: \[\(.*\)\]$$/\1/p' | tr -d ',')
 UNDICI_VERSIONS ?= $(shell tr -d '\r' < .github/workflows/test.yml | sed -n 's/^ *undici-node: \[\(.*\)\]$$/\1/p' | tr -d ',')
 GOT_VERSIONS ?= $(shell tr -d '\r' < .github/workflows/test.yml | sed -n 's/^ *got-node: \[\(.*\)\]$$/\1/p' | tr -d ',')
+IMPIT_VERSIONS ?= $(shell tr -d '\r' < .github/workflows/test.yml | sed -n 's/^ *impit-node: \[\(.*\)\]$$/\1/p' | tr -d ',')
 NPM_INSTALL := npm install --ignore-scripts --no-package-lock --no-audit --no-fund --legacy-peer-deps --loglevel=error
 
 # $(call in_node,<node version>,<npm scripts>): copy the repository without
@@ -40,7 +41,7 @@ endef
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install install-undici install-got test test-undici test-got lint test-cov check-original-tests test-in-docker test-undici-in-docker test-got-in-docker lint-in-docker release-notes publish
+.PHONY: help install install-undici install-got install-impit test test-undici test-got test-impit lint test-cov check-original-tests test-in-docker test-undici-in-docker test-got-in-docker test-impit-in-docker lint-in-docker release-notes publish
 
 help: ## this list
 	@awk '/^[a-z][a-zA-Z0-9_-]*:/ { name = substr($$0, 1, index($$0, ":") - 1); text = index($$0, "## ") ? substr($$0, index($$0, "## ") + 3) : ""; printf "make %-22s %s\n", name, text }' $(firstword $(MAKEFILE_LIST))
@@ -53,6 +54,9 @@ install-undici: ## install the undici engine package with the core linked from t
 
 install-got: ## install the got engine package with the core linked from this checkout
 	@cd packages/got && npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund --loglevel=error ../..
+
+install-impit: ## install the impit engine package with the core linked from this checkout
+	@cd packages/impit && npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund --loglevel=error ../..
 
 # Node 16 and older are built with OpenSSL 1.x and fail on the OpenSSL 3
 # configuration of current Linux systems ("DSO support routines"); they get
@@ -70,6 +74,10 @@ test-undici: ## engine tests and the core suite through undici on the Node you h
 test-got: ## engine tests and the core suite through got on the Node you have (>= 22.12)
 	@node node_modules/tape/bin/tape 'packages/got/tests/test-*.js'
 	node packages/got/tests/run-core-suite.js
+
+test-impit: ## engine tests and the core suite through impit on the Node you have (>= 20)
+	@node node_modules/tape/bin/tape 'packages/impit/tests/test-*.js'
+	node packages/impit/tests/run-core-suite.js
 
 lint: ## lint, like CI
 	npm run lint
@@ -110,6 +118,10 @@ test-undici-in-docker: ## test-undici in node:<version> containers; UNDICI_VERSI
 test-got-in-docker: ## test-got in node:<version> containers; GOT_VERSIONS="22 26"
 	@test -n "$(strip $(GOT_VERSIONS))" || { echo 'no Node versions: set GOT_VERSIONS or check the got-node matrix in .github/workflows/test.yml'; exit 2; }
 	$(call engine_in_node,got,$(GOT_VERSIONS))
+
+test-impit-in-docker: ## test-impit in node:<version> containers; IMPIT_VERSIONS="20 26"
+	@test -n "$(strip $(IMPIT_VERSIONS))" || { echo 'no Node versions: set IMPIT_VERSIONS or check the impit-node matrix in .github/workflows/test.yml'; exit 2; }
+	$(call engine_in_node,impit,$(IMPIT_VERSIONS))
 
 lint-in-docker: ## lint in a node:22 container
 	@$(call in_node,22,lint)

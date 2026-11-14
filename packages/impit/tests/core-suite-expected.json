@@ -1,0 +1,553 @@
+[
+  {
+    "file": "test-agent.js",
+    "test": "options.agent",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-agent.js",
+    "test": "options.agentClass + options.agentOptions",
+    "reason": "agentClass: refused with OPTION_NOT_SUPPORTED, a Node agent class has no equivalent in impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-agent.js",
+    "test": "options.forever = true",
+    "reason": "agent: r.agent is not set and a pool object is not filled, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest, r.agent is not set and a pool object is not filled)"
+  },
+  {
+    "file": "test-agent.js",
+    "test": "forever() method",
+    "reason": "agent: r.agent is not set and a pool object is not filled, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest, r.agent is not set and a pool object is not filled)"
+  },
+  {
+    "file": "test-agentOptions.js",
+    "test": "with agentOptions should apply to new agent in pool",
+    "reason": "agentOptions.foo: refused with OPTION_NOT_SUPPORTED, a key without an impit equivalent (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-agentOptions.js",
+    "test": "without agentOptions should use global agent",
+    "reason": "agent: r.agent is not set and a pool object is not filled, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest, r.agent is not set and a pool object is not filled)"
+  },
+  {
+    "file": "test-bearer-auth.js",
+    "test": "cleanup",
+    "intermittent": true,
+    "reason": "connections: impit may open a connection that never carries a request, and server.close() waits for it before Node 26; whether one is left depends on timing and Node 26 closes it, so this entry may or may not occur (test-differences.js: impit may open a connection that never carries a request, and server.close() waits for it where Node waits for a connection without a request)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "checkServerIdentity runs on a pooled agent whose TLS session an earlier request opened",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "checkServerIdentity runs on a caller agent whose TLS session an earlier request opened",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "checkServerIdentity runs when an earlier request left a keep-alive socket in the pool",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "checkServerIdentity runs when the global agent holds a socket or TLS session of an earlier request",
+    "reason": "https.globalAgent.options.ca: refused with OPTION_NOT_SUPPORTED, the test sets ca (and checkServerIdentity) on Node's global agent and impit takes neither (test-differences.js: rejectUnauthorized of https.globalAgent.options applies as in Node; any other changed option of a global agent is refused)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "a check set on the global agent stays for a request without its own check",
+    "reason": "https.globalAgent.options.ca: refused with OPTION_NOT_SUPPORTED, the test sets ca (and checkServerIdentity) on Node's global agent and impit takes neither (test-differences.js: rejectUnauthorized of https.globalAgent.options applies as in Node; any other changed option of a global agent is refused)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "a request runs its own check although the pool holds an agent with the check of another request",
+    "reason": "agentOptions.ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "a checkServerIdentity in agentOptions runs although the pool holds an agent without it",
+    "reason": "agentOptions.ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "a request without a check gets the default check although the pool holds an agent with a loose check",
+    "reason": "agentOptions.ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "checkServerIdentity runs with an https module passed in httpModules",
+    "reason": "httpModules: refused with OPTION_NOT_SUPPORTED, every request goes through impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "a global agent of another class stays in use for a request with checkServerIdentity",
+    "reason": "checkServerIdentity: refused with OPTION_NOT_SUPPORTED, impit runs no caller check of the certificate (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "requests without checkServerIdentity keep reusing the pooled keep-alive socket",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-check-server-identity-reuse.js",
+    "test": "a checkServerIdentity set on the agent keeps reusing the keep-alive socket",
+    "reason": "agentOptions.ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-defaults.js",
+    "test": "test custom request handler function",
+    "reason": "body: refused with OPTION_NOT_SUPPORTED, impit sends no body with GET (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-defaults.js",
+    "test": "deep extend",
+    "reason": "headers: impit adds accept-encoding, which the echoed headers then contain (test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them)"
+  },
+  {
+    "file": "test-deflate-raw.js",
+    "test": "a raw deflate response is decoded with the events of a gzip response",
+    "reason": "gzip: impit does not decode a raw deflate body (test-differences.js: a raw deflate body is an error, the core would decode it)"
+  },
+  {
+    "file": "test-emptyBody.js",
+    "test": "empty JSON body",
+    "reason": "body: refused with OPTION_NOT_SUPPORTED, impit sends no body with GET (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-event-forwarding.js",
+    "test": "should emit socket event",
+    "reason": "socket: the request emits no socket event and r.req.socket is not set, impit hands out no socket (test-lifecycle.js: every exchange emits connecting without a socket, then lookup and connect, and the request emits no socket event)"
+  },
+  {
+    "file": "test-form-data-error.js",
+    "test": "omit content-length header if the value is set to NaN",
+    "reason": "response: form-data reads response.client._httpMessage.path of a response used as a formData value and throws a TypeError, the engine response has no socket (test-differences.js: a response used as a formData value makes form-data throw, as form-data reads the socket of a Node response)"
+  },
+  {
+    "file": "test-form-data.js",
+    "test": "multipart formData + basic auth over a keep-alive agent",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-gzip.js",
+    "test": "supports slightly invalid gzip content",
+    "reason": "gzip: the strict decoding of impit fails where the core decodes leniently or reports the error on its own stream (test-differences.js: a truncated gzip body is an error, the lenient decoding of the core does not apply)"
+  },
+  {
+    "file": "test-gzip.js",
+    "test": "transparently supports gzip decoding to callbacks",
+    "reason": "gzip: impit decodes the body itself and the engine removes content-encoding, also without the gzip option (test-differences.js: impit decodes gzip, deflate, br and zstd itself: the body is decoded once and content-encoding and content-length are removed)"
+  },
+  {
+    "file": "test-gzip.js",
+    "test": "does not decode user-requested encoding by default",
+    "reason": "gzip: impit decodes the body itself and the engine removes content-encoding, also without the gzip option (test-differences.js: impit decodes gzip, deflate, br and zstd itself: the body is decoded once and content-encoding and content-length are removed)"
+  },
+  {
+    "file": "test-gzip.js",
+    "test": "transparently supports gzip error to pipes",
+    "reason": "gzip: the strict decoding of impit fails where the core decodes leniently or reports the error on its own stream (test-differences.js: a truncated gzip body is an error, the lenient decoding of the core does not apply)"
+  },
+  {
+    "file": "test-gzip.js",
+    "test": "transparently supports deflate decoding to callbacks",
+    "reason": "gzip: impit decodes the body itself and the engine removes content-encoding, also without the gzip option (test-differences.js: impit decodes gzip, deflate, br and zstd itself: the body is decoded once and content-encoding and content-length are removed)"
+  },
+  {
+    "file": "test-har.js",
+    "test": "custom-method",
+    "reason": "method: refused with OPTION_NOT_SUPPORTED, impit sends GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS and TRACE only (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-headers.js",
+    "test": "strip port in host header if explicit standard port (:80) & protocol (HTTP)",
+    "reason": "socket: the request emits no socket event and r.req.socket is not set, impit hands out no socket (test-lifecycle.js: every exchange emits connecting without a socket, then lookup and connect, and the request emits no socket event)"
+  },
+  {
+    "file": "test-headers.js",
+    "test": "strip port in host header if explicit standard port (:443) & protocol (HTTPS)",
+    "reason": "socket: the request emits no socket event and r.req.socket is not set, impit hands out no socket (test-lifecycle.js: every exchange emits connecting without a socket, then lookup and connect, and the request emits no socket event)"
+  },
+  {
+    "file": "test-headers.js",
+    "test": "strip port in host header if implicit standard port & protocol (HTTP)",
+    "reason": "socket: the request emits no socket event and r.req.socket is not set, impit hands out no socket (test-lifecycle.js: every exchange emits connecting without a socket, then lookup and connect, and the request emits no socket event)"
+  },
+  {
+    "file": "test-headers.js",
+    "test": "strip port in host header if implicit standard port & protocol (HTTPS)",
+    "reason": "socket: the request emits no socket event and r.req.socket is not set, impit hands out no socket (test-lifecycle.js: every exchange emits connecting without a socket, then lookup and connect, and the request emits no socket event)"
+  },
+  {
+    "file": "test-headers.js",
+    "test": "upper-case Host header and redirect",
+    "reason": "headers: header names are written in lower case, also Host (test-differences.js: header names are written in lower case, in the order of the caller, followed by the headers impit adds)"
+  },
+  {
+    "file": "test-httpModule.js",
+    "test": "http only",
+    "reason": "httpModules: refused with OPTION_NOT_SUPPORTED, every request goes through impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-httpModule.js",
+    "test": "https only",
+    "reason": "httpModules: refused with OPTION_NOT_SUPPORTED, every request goes through impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-httpModule.js",
+    "test": "http and https",
+    "reason": "httpModules: refused with OPTION_NOT_SUPPORTED, every request goes through impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-https.js",
+    "test": "strict testGet",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-https.js",
+    "test": "strict testGetChunkBreak",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-https.js",
+    "test": "strict testGetJSON",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-https.js",
+    "test": "strict testPutString",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-https.js",
+    "test": "strict testPutBuffer",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-https.js",
+    "test": "strict testPutJSON",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-https.js",
+    "test": "strict testPutMultipart",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-multipart.js",
+    "test": "multipart-related GET default +json",
+    "reason": "body: refused with OPTION_NOT_SUPPORTED, impit sends no body with GET (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-multipart.js",
+    "test": "multipart-related GET default -json",
+    "reason": "body: refused with OPTION_NOT_SUPPORTED, impit sends no body with GET (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-multipart.js",
+    "test": "multipart-related GET multipart/mixed +json",
+    "reason": "body: refused with OPTION_NOT_SUPPORTED, impit sends no body with GET (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-multipart.js",
+    "test": "multipart-related GET multipart/mixed -json",
+    "reason": "body: refused with OPTION_NOT_SUPPORTED, impit sends no body with GET (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-multipart.js",
+    "test": "multipart-related GET multipart/related; boundary=XXX; type=text/xml; start=\"<root>\" +json",
+    "reason": "body: refused with OPTION_NOT_SUPPORTED, impit sends no body with GET (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-multipart.js",
+    "test": "multipart-related GET multipart/related; boundary=XXX; type=text/xml; start=\"<root>\" -json",
+    "reason": "body: refused with OPTION_NOT_SUPPORTED, impit sends no body with GET (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-pool-inline-agent-options.js",
+    "test": "requests with an inline checkServerIdentity share one pooled agent",
+    "reason": "agentOptions.ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-pool-passphrase.js",
+    "test": "a pooled agent is not reused for a request with another passphrase",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-pool.js",
+    "test": "forever",
+    "reason": "agent: r.agent is not set and a pool object is not filled, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest, r.agent is not set and a pool object is not filled)"
+  },
+  {
+    "file": "test-pool.js",
+    "test": "forever, should use same agent in sequential requests",
+    "reason": "agent: r.agent is not set and a pool object is not filled, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest, r.agent is not set and a pool object is not filled)"
+  },
+  {
+    "file": "test-pool.js",
+    "test": "forever, should use same agent in sequential requests(with pool.maxSockets)",
+    "reason": "agent: r.agent is not set and a pool object is not filled, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest, r.agent is not set and a pool object is not filled)"
+  },
+  {
+    "file": "test-pool.js",
+    "test": "forever, should use same agent in request() and request.verb",
+    "reason": "agent: r.agent is not set and a pool object is not filled, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest, r.agent is not set and a pool object is not filled)"
+  },
+  {
+    "file": "test-pool.js",
+    "test": "should use different agent if pool option specified",
+    "reason": "agent: r.agent is not set and a pool object is not filled, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest, r.agent is not set and a pool object is not filled)"
+  },
+  {
+    "file": "test-pool.js",
+    "test": "pool",
+    "reason": "agent: r.agent is not set and a pool object is not filled, the engine has no Node agent (test-differences.js: r.req is not a ClientRequest, r.agent is not set and a pool object is not filled)"
+  },
+  {
+    "file": "test-proxy-connect.js",
+    "test": "proxy",
+    "reason": "tunnel: refused with OPTION_NOT_SUPPORTED, impit tunnels https targets and forwards http targets, the test asks for the opposite (test-options.js: proxy options the engine cannot honour are refused)"
+  },
+  {
+    "file": "test-proxy.js",
+    "test": "HTTP_PROXY environment variable and https: url",
+    "reason": "tunnel: refused with OPTION_NOT_SUPPORTED, impit tunnels https targets and forwards http targets, the test asks for the opposite (test-options.js: proxy options the engine cannot honour are refused)"
+  },
+  {
+    "file": "test-proxy.js",
+    "test": "http_proxy environment variable and https: url",
+    "reason": "tunnel: refused with OPTION_NOT_SUPPORTED, impit tunnels https targets and forwards http targets, the test asks for the opposite (test-options.js: proxy options the engine cannot honour are refused)"
+  },
+  {
+    "file": "test-proxy.js",
+    "test": "HTTPS_PROXY environment variable and https: url",
+    "reason": "tunnel: refused with OPTION_NOT_SUPPORTED, impit tunnels https targets and forwards http targets, the test asks for the opposite (test-options.js: proxy options the engine cannot honour are refused)"
+  },
+  {
+    "file": "test-proxy.js",
+    "test": "https_proxy environment variable and https: url",
+    "reason": "tunnel: refused with OPTION_NOT_SUPPORTED, impit tunnels https targets and forwards http targets, the test asks for the opposite (test-options.js: proxy options the engine cannot honour are refused)"
+  },
+  {
+    "file": "test-proxy.js",
+    "test": "multiple environment variables and https: url",
+    "reason": "tunnel: refused with OPTION_NOT_SUPPORTED, impit tunnels https targets and forwards http targets, the test asks for the opposite (test-options.js: proxy options the engine cannot honour are refused)"
+  },
+  {
+    "file": "test-redirect-cookie.js",
+    "test": "a Secure jar cookie does not follow a redirect from https to http on the same host",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-redirect-hop-cleanup.js",
+    "test": "redirect keeps a completed hop socket reusable",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-redirect-multipart.js",
+    "test": "multipart() in a redirect listener sets the body of the next hop, as in 2.88.2",
+    "reason": "body: refused with OPTION_NOT_SUPPORTED, impit sends no body with GET (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-redirect-proxy-agent.js",
+    "test": "https to http redirect through a proxy with a caller agent is followed through the proxy",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-redirect-proxy-agent.js",
+    "test": "https to http redirect without a proxy keeps a caller agent and fails",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-redirect.js",
+    "test": "http to https redirect replaces a caller agent with the \"allowInsecureRedirect\" option",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-redirect.js",
+    "test": "should use same agent class on redirect",
+    "reason": "agentClass: refused with OPTION_NOT_SUPPORTED, a Node agent class has no equivalent in impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-redirect.js",
+    "test": "http to https redirect keeps a caller agent and fails without the explicit \"allowInsecureRedirect\" option",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-redirect.js",
+    "test": "http to https redirect keeps a caller agentClass and fails without the explicit \"allowInsecureRedirect\" option",
+    "reason": "agentClass: refused with OPTION_NOT_SUPPORTED, a Node agent class has no equivalent in impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-timeout.js",
+    "test": "should not timeout",
+    "reason": "socket: the request emits no socket event and r.req.socket is not set, impit hands out no socket (test-lifecycle.js: every exchange emits connecting without a socket, then lookup and connect, and the request emits no socket event)"
+  },
+  {
+    "file": "test-timeout.js",
+    "test": "connect timeout",
+    "reason": "timeout: a connection that is never established reports ESOCKETTIMEDOUT with connect false, and the test reads the socket of the socket event (test-lifecycle.js: a connection that is never established is ESOCKETTIMEDOUT with connect false, Node says ETIMEDOUT with connect true)"
+  },
+  {
+    "file": "test-timeout.js",
+    "test": "connect timeout with non-timeout error",
+    "reason": "socket: the request emits no socket event and r.req.socket is not set, impit hands out no socket (test-lifecycle.js: every exchange emits connecting without a socket, then lookup and connect, and the request emits no socket event)"
+  },
+  {
+    "file": "test-timeout.js",
+    "test": "request timeout with keep-alive connection",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-timing.js",
+    "test": "keepAlive is timed",
+    "reason": "agent: refused with OPTION_NOT_SUPPORTED, a caller's Node agent has no equivalent in impit (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-tunnel-check-server-identity.js",
+    "test": "checkServerIdentity runs through a proxy tunnel and can reject the certificate",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel-check-server-identity.js",
+    "test": "checkServerIdentity runs through a proxy tunnel and can accept the certificate",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel-check-server-identity.js",
+    "test": "checkServerIdentity of agentOptions runs through a proxy tunnel",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel-errors.js",
+    "test": "bytes a proxy sends after its 200 are dropped and the request succeeds",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel-pool-false.js",
+    "test": "pool: false keeps an https request on its proxy tunnel",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "http over http, tunnel=true",
+    "reason": "tunnel: refused with OPTION_NOT_SUPPORTED, impit tunnels https targets and forwards http targets, the test asks for the opposite (test-options.js: proxy options the engine cannot honour are refused)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "http over https, tunnel=true",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "http over https, tunnel=false",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "http over https, tunnel=default",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https over http, tunnel=true",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https over http, tunnel=false",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https over http, tunnel=default",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https over https, tunnel=true",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https over https, tunnel=false",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https over https, tunnel=default",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "http->http over http, tunnel=true",
+    "reason": "tunnel: refused with OPTION_NOT_SUPPORTED, impit tunnels https targets and forwards http targets, the test asks for the opposite (test-options.js: proxy options the engine cannot honour are refused)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "http->https over http, tunnel=true",
+    "reason": "tunnel: refused with OPTION_NOT_SUPPORTED, impit tunnels https targets and forwards http targets, the test asks for the opposite (test-options.js: proxy options the engine cannot honour are refused)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "http->https over http, tunnel=false",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "http->https over http, tunnel=default",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https->http over http, tunnel=true",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https->http over http, tunnel=false",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https->http over http, tunnel=default",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https->https over http, tunnel=true",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https->https over http, tunnel=false",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "https->https over http, tunnel=default",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "mutual https over http, tunnel=true",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-tunnel.js",
+    "test": "mutual https over http, tunnel=default",
+    "reason": "ca: refused with OPTION_NOT_SUPPORTED, impit takes no certificate authority (test-api.js: TLS options are refused on a hop with TLS: an https target, or any target through an https proxy)"
+  },
+  {
+    "file": "test-unix.js",
+    "test": "unix socket connection",
+    "reason": "socketPath: refused with OPTION_NOT_SUPPORTED, impit does not connect to unix sockets (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  },
+  {
+    "file": "test-unix.js",
+    "test": "unix socket connection with qs",
+    "reason": "socketPath: refused with OPTION_NOT_SUPPORTED, impit does not connect to unix sockets (test-api.js: options the engine cannot honour are refused from send before anything is sent)"
+  }
+]

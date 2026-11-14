@@ -59,6 +59,21 @@ jobs:
       - run: make install-got
       - run: make test-got
 
+  impit:
+    name: impit engine on Node.js ${{ matrix.impit-node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        impit-node: [20, 22, 24, 26]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.impit-node }}
+      - run: make install
+      - run: make install-impit
+      - run: make test-impit
 
   lint:
     name: Lint and original tests

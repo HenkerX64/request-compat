@@ -1,0 +1,49 @@
+{
+  "name": "request-compat-impit",
+  "version": "1.0.0-beta.0",
+  "description": "request-compat on impit: the same request API and behaviour with a browser's TLS and HTTP/2 fingerprint.",
+  "keywords": [
+    "request",
+    "impit",
+    "http",
+    "https",
+    "drop-in",
+    "replacement",
+    "deprecated",
+    "migration",
+    "compat",
+    "request-promise",
+    "overrides",
+    "impersonation",
+    "fingerprint"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/HenkerX64/request-compat/tree/master/packages/impit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HenkerX64/request-compat.git",
+    "directory": "packages/impit"
+  },
+  "bugs": {
+    "url": "https://github.com/HenkerX64/request-compat/issues"
+  },
+  "main": "index.js",
+  "files": [
+    "CHANGELOG.md",
+    "index.js",
+    "lib/"
+  ],
+  "dependencies": {
+    "impit": "0.14.9",
+    "request-compat": "2.88.6"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "tag": "next"
+  },
+  "scripts": {
+    "test": "make -C ../.. test-impit"
+  }
+}
