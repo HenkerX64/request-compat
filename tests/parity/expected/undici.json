@@ -1,0 +1,8 @@
+[
+  {
+    "file": "core.parity.test.js",
+    "test": "differential — same observable outcome for both clients HEAD request",
+    "reason": "undici sends every HEAD request with connection: close, so the response, which request-promise resolves for HEAD, says connection: close and has no keep-alive header; Node's global agent sends connection: keep-alive",
+    "pinnedBy": "packages/undici/tests/test-differences.js: a HEAD request goes out with connection: close, so its response says close, where Node keeps the connection alive"
+  }
+]

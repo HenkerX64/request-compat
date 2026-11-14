@@ -12,6 +12,10 @@ VERSIONS ?= $(shell tr -d '\r' < .github/workflows/test.yml | sed -n 's/^ *node:
 UNDICI_VERSIONS ?= $(shell tr -d '\r' < .github/workflows/test.yml | sed -n 's/^ *undici-node: \[\(.*\)\]$$/\1/p' | tr -d ',')
 GOT_VERSIONS ?= $(shell tr -d '\r' < .github/workflows/test.yml | sed -n 's/^ *got-node: \[\(.*\)\]$$/\1/p' | tr -d ',')
 IMPIT_VERSIONS ?= $(shell tr -d '\r' < .github/workflows/test.yml | sed -n 's/^ *impit-node: \[\(.*\)\]$$/\1/p' | tr -d ',')
+PARITY_SUITE_REPOSITORY ?= $(shell tr -d '\r' < .github/workflows/parity.yml | sed -n 's/^ *PARITY_SUITE_REPOSITORY: *\([^ ]*\)$$/\1/p')
+PARITY_SUITE_COMMIT ?= $(shell tr -d '\r' < .github/workflows/parity.yml | sed -n 's/^ *PARITY_SUITE_COMMIT: *\([0-9a-f]*\)$$/\1/p')
+PARITY_TARGETS ?= core got undici impit
+PARITY_NODE ?= 22
 NPM_INSTALL := npm install --ignore-scripts --no-package-lock --no-audit --no-fund --legacy-peer-deps --loglevel=error
 
 # $(call in_node,<node version>,<npm scripts>): copy the repository without
@@ -122,6 +126,28 @@ test-got-in-docker: ## test-got in node:<version> containers; GOT_VERSIONS="22 2
 test-impit-in-docker: ## test-impit in node:<version> containers; IMPIT_VERSIONS="20 26"
 	@test -n "$(strip $(IMPIT_VERSIONS))" || { echo 'no Node versions: set IMPIT_VERSIONS or check the impit-node matrix in .github/workflows/test.yml'; exit 2; }
 	$(call engine_in_node,impit,$(IMPIT_VERSIONS))
+
+# The promise parity suite of request-got-adapter (Jest) compares request-promise-native 1.0.9 on
+# request 2.88.2 with request-promise-native 1.0.9 on each target: the core and the engine packages,
+# packed from this checkout, each engine with the core of this checkout. The suite's repository and
+# commit are set in .github/workflows/parity.yml; tests/parity/expected/<target>.json lists the
+# tests that fail by a documented difference of that target.
+.PHONY: parity parity-in-docker
+
+parity: ## the promise parity suite on the Node you have (>= 22); PARITY_TARGETS="core got", PARITY_SUITE=<checkout>, PARITY_OUT=<dir>
+	@PARITY_TARGETS="$(PARITY_TARGETS)" PARITY_SUITE="$(PARITY_SUITE)" PARITY_SUITE_REPOSITORY="$(PARITY_SUITE_REPOSITORY)" \
+	  PARITY_SUITE_COMMIT="$(PARITY_SUITE_COMMIT)" PARITY_OUT="$(PARITY_OUT)" PARITY_WORK="$(PARITY_WORK)" node tests/parity/run.js
+
+parity-in-docker: ## parity in a node:<PARITY_NODE> container, default 22; PARITY_TARGETS="core got", PARITY_OUT=<dir> keeps the results
+	@out=
+	if [ -n "$(PARITY_OUT)" ]; then
+	  mkdir -p "$(PARITY_OUT)"
+	  out='-v $(abspath $(PARITY_OUT)):/out'
+	fi
+	docker run --rm -v "$(CURDIR):/src:ro" $$out "node:$(PARITY_NODE)" sh -ec '
+	  mkdir /app && tar -C /src --exclude=./node_modules --exclude="./packages/*/node_modules" -cf - . | tar -C /app -xf - && cd /app
+	  node -v && npm -v
+	  make parity PARITY_TARGETS="$(PARITY_TARGETS)" $(if $(PARITY_OUT),PARITY_OUT=/out)'
 
 lint-in-docker: ## lint in a node:22 container
 	@$(call in_node,22,lint)

@@ -70,6 +70,12 @@ module; installed from npm, it does not.
 prerelease, so the beta needs `@next` or the exact version; from 1.0.0 on, use
 `"npm:request-compat-got@^1"`.
 
+With npm 10 and 11 this installs together with `request-promise-native` and other packages that
+declare a peer dependency on `request` (`request-promise-native` 1.0.9: `^2.34`), without
+`--legacy-peer-deps`: the override also replaces their peer, which the version of this package
+(`1.x`) does not match. Without `overrides`, npm stops with `ERESOLVE`. The parity suite (see
+[Tests](#tests)) installs the package this way.
+
 ## Options
 
 Every option of `request` 2.88.2 works as with request-compat on Node's transport: the engine
@@ -337,6 +343,12 @@ In the repository, after `npm install` at the root and
 `tests/core-suite-expected.json`, each with the test that pins its difference; the list is empty.
 `tests/test-node-parity.js` (P1 to P4) fails when a core release changes the Node transport code
 that `lib/agents.js` copies, so the copy moves with the core pin.
+
+`make parity-in-docker PARITY_TARGETS=got` runs the promise parity suite of
+request-got-adapter (Jest, 275 tests): request-promise-native 1.0.9 on request 2.88.2 against
+request-promise-native 1.0.9 on this package, packed from the checkout together with the core of the
+checkout. All 275 pass; `tests/parity/expected/got.json` at the repository root, the list of
+tests that fail by a difference above, is empty.
 
 ## License
 

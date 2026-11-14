@@ -1,0 +1,974 @@
+[
+  {
+    "file": "fuzz.parity.test.js",
+    "test": "fuzzed option combinations — identical outcome for both clients seed 20260719, 200 runs",
+    "reason": "the first generated case sends a json body with GET, which the engine refuses with OPTION_NOT_SUPPORTED as body (impit sends no body on GET or HEAD); fast-check stops at the first failing case",
+    "pinnedBy": "packages/impit/tests/test-api.js: options the engine cannot honour are refused from send before anything is sent"
+  },
+  {
+    "file": "core.parity.test.js",
+    "test": "core behavior — request-got-adapter sends no accept-encoding header by default",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; Node sends none",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "core.parity.test.js",
+    "test": "differential — same observable outcome for both clients plain GET",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br and sends no connection header, where Node sends connection: keep-alive; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: header names are written in lower case, in the order of the caller, followed by the headers impit adds"
+  },
+  {
+    "file": "core.parity.test.js",
+    "test": "differential — same observable outcome for both clients string body with json:true",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br and sends no connection header, where Node sends connection: keep-alive; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: header names are written in lower case, in the order of the caller, followed by the headers impit adds"
+  },
+  {
+    "file": "core.parity.test.js",
+    "test": "differential — same observable outcome for both clients number-ish qs values",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br and sends no connection header, where Node sends connection: keep-alive; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: header names are written in lower case, in the order of the caller, followed by the headers impit adds"
+  },
+  {
+    "file": "core.parity.test.js",
+    "test": "differential — same observable outcome for both clients qs:null is ignored",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br and sends no connection header, where Node sends connection: keep-alive; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: header names are written in lower case, in the order of the caller, followed by the headers impit adds"
+  },
+  {
+    "file": "core.parity.test.js",
+    "test": "differential — same observable outcome for both clients qs:false is ignored",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br and sends no connection header, where Node sends connection: keep-alive; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: header names are written in lower case, in the order of the caller, followed by the headers impit adds"
+  },
+  {
+    "file": "core.parity.test.js",
+    "test": "differential — same observable outcome for both clients form:null is ignored",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br and sends no connection header, where Node sends connection: keep-alive; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: header names are written in lower case, in the order of the caller, followed by the headers impit adds"
+  },
+  {
+    "file": "core.parity.test.js",
+    "test": "differential — same observable outcome for both clients formData:null is ignored",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br and sends no connection header, where Node sends connection: keep-alive; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: header names are written in lower case, in the order of the caller, followed by the headers impit adds"
+  },
+  {
+    "file": "core.parity.test.js",
+    "test": "differential — same observable outcome for both clients json:null is ignored",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br and sends no connection header, where Node sends connection: keep-alive; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: header names are written in lower case, in the order of the caller, followed by the headers impit adds"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients qs = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients qs = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients qs = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients qs = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients qs = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients qs = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients form = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients form = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients form = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients form = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients form = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients form = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients formData = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients formData = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients formData = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients formData = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients formData = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients formData = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients json = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients json = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients json = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients json = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients json = empty object",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients json = empty array",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients headers = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients headers = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients headers = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients headers = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients headers = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients headers = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients auth = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients auth = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients auth = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients auth = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients gzip = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients gzip = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients gzip = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients gzip = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients gzip = empty object",
+    "reason": "impit adds accept: */*; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients gzip = empty array",
+    "reason": "impit adds accept: */*; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients timeout = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients timeout = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients timeout = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients timeout = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients timeout = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients timeout = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients simple = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients simple = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients simple = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients simple = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients simple = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients simple = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients resolveWithFullResponse = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients resolveWithFullResponse = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients resolveWithFullResponse = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients resolveWithFullResponse = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients resolveWithFullResponse = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients resolveWithFullResponse = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followRedirect = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followRedirect = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followRedirect = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followRedirect = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followRedirect = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followRedirect = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followAllRedirects = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followAllRedirects = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followAllRedirects = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followAllRedirects = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followAllRedirects = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followAllRedirects = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followOriginalHttpMethod = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followOriginalHttpMethod = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followOriginalHttpMethod = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followOriginalHttpMethod = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followOriginalHttpMethod = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients followOriginalHttpMethod = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients maxRedirects = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients maxRedirects = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients maxRedirects = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients maxRedirects = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients maxRedirects = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients maxRedirects = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients useQuerystring = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients useQuerystring = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients useQuerystring = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients useQuerystring = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients useQuerystring = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients useQuerystring = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients strictSSL = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients strictSSL = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients strictSSL = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients strictSSL = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients strictSSL = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients strictSSL = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients forever = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients forever = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients forever = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients forever = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients forever = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients forever = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients time = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients time = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients time = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients time = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients time = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients time = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients jar = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients jar = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients jar = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients jar = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients jar = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients jar = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients transform = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients transform = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients transform = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients transform = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients transform = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients transform = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients agentOptions = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients agentOptions = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients agentOptions = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients agentOptions = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients agentOptions = empty object",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients agentOptions = empty array",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients body = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients body = null with json:true",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients body = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients body = false with json:true",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients body = empty string",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients body = empty string with json:true",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients body = zero",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients body = zero with json:true",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients method = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients oauth = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients oauth = false",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "matrix.parity.test.js",
+    "test": "degenerate option values — identical outcome for both clients encoding = null",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients headers+json+method+uri (276 sites — bearer-header GET)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients headers+json+method+qs+uri (192 sites — paginated list call)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients body+headers+json+method+uri (161 sites — JSON PATCH/POST)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients form+json+method+uri (41 sites — OAuth token refresh)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients form+headers+json+method+uri (36 sites — token exchange with basic header)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients body+headers+json+method+qs+uri (26 sites — write with query params)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients qs+uri (19 sites — bare query GET)",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients auth+json+method+uri (12 sites — auth.bearer client)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients body+method+uri (17 sites — raw string body)",
+    "reason": "impit adds accept: */* and accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients headers+json+method+resolveWithFullResponse+uri (5 sites — status-inspecting call)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients body+form+headers+json+method+qs+uri (3 sites — kitchen-sink call)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients qs: null via conditional (13 sites — the production incident shape)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients body: null via conditional (22 sites — optional payload)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients form: null via conditional (1 site)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients headers: null via conditional (1 site)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  },
+  {
+    "file": "corpus.parity.test.js",
+    "test": "production call-site shapes — identical outcome for both clients method: null via conditional (2 sites — defaults to GET)",
+    "reason": "impit adds accept-encoding: zstd,gzip,deflate,br; the server of the suite echoes the request headers",
+    "pinnedBy": "packages/impit/tests/test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them"
+  }
+]

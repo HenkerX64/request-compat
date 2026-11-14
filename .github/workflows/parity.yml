@@ -1,0 +1,40 @@
+name: Promise parity
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: '23 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PARITY_SUITE_REPOSITORY: toriihq/request-got-adapter-parity-tests
+  PARITY_SUITE_COMMIT: 6dce73d1da5092718cac5f3f669fee5148e88450
+
+jobs:
+  parity:
+    name: ${{ matrix.target }} against request-promise-native on request 2.88.2
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [core, got, undici, impit]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ env.PARITY_SUITE_REPOSITORY }}
+          ref: ${{ env.PARITY_SUITE_COMMIT }}
+          path: parity-suite
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: make parity PARITY_TARGETS="$TARGET" PARITY_SUITE=parity-suite
+        env:
+          TARGET: ${{ matrix.target }}

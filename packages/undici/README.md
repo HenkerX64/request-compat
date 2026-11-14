@@ -47,6 +47,12 @@ Requires Node.js 22.19 or later (the floor of undici 8). On an older Node, `requ
 prerelease, so the beta needs `@next` or the exact version; from 1.0.0 on, use
 `"npm:request-compat-undici@^1"`.
 
+With npm 10 and 11 this installs together with `request-promise-native` and other packages that
+declare a peer dependency on `request` (`request-promise-native` 1.0.9: `^2.34`), without
+`--legacy-peer-deps`: the override also replaces their peer, which the version of this package
+(`1.x`) does not match. Without `overrides`, npm stops with `ERESOLVE`. The parity suite (see
+[Tests](#tests)) installs the package this way.
+
 ## Share connections and cookies with undici
 
 ```js
@@ -444,6 +450,12 @@ These looked like differences and are not:
 suite of request-compat through the engine (`tests/run-core-suite.js`). Core tests that fail by a
 difference above are listed in `tests/core-suite-expected.json`, each with the test that pins its
 difference. `bench/compare.js` compares the throughput of both transports; it is not part of CI.
+
+`make parity-in-docker PARITY_TARGETS=undici` runs the promise parity suite of
+request-got-adapter (Jest, 275 tests): request-promise-native 1.0.9 on request 2.88.2 against
+request-promise-native 1.0.9 on this package, packed from the checkout together with the core of the
+checkout. 274 pass; the one that fails, by the HEAD difference above, is listed in
+`tests/parity/expected/undici.json` at the repository root with the test that pins it.
 
 ## License
 

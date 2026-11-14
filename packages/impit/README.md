@@ -52,6 +52,12 @@ prerelease, so the beta needs `@next` or the exact version; from 1.0.0 on, use
 `"npm:request-compat-impit@^1"`. Do not install with `--omit=optional`: the binary is an optional
 dependency of impit.
 
+With npm 10 and 11 this installs together with `request-promise-native` and other packages that
+declare a peer dependency on `request` (`request-promise-native` 1.0.9: `^2.34`), without
+`--legacy-peer-deps`: the override also replaces their peer, which the version of this package
+(`1.x`) does not match. Without `overrides`, npm stops with `ERESOLVE`. The parity suite (see
+[Tests](#tests)) installs the package this way.
+
 ## browser
 
 ```js
@@ -446,6 +452,14 @@ engine tests and the core suite of request-compat through the engine
 harness (`tests/use-engine.js`) only swaps the entry point and makes Node's transport throw. The three core
 files that test Node's own transport (`test-transport.js`, `test-node-transport.js`,
 `test-api-shape.js`) are not run through the engine.
+
+`make parity-in-docker PARITY_TARGETS=impit` runs the promise parity suite of
+request-got-adapter (Jest, 275 tests): request-promise-native 1.0.9 on request 2.88.2 against
+request-promise-native 1.0.9 on this package, packed from the checkout together with the core of the
+checkout. 113 pass. The 162 that fail, by the headers impit adds (`accept`,
+`accept-encoding`) and the missing `connection` header, which the suite's server echoes, and by
+the refused body on GET, are listed in `tests/parity/expected/impit.json` at the repository root,
+each with the test that pins it.
 
 ## License
 
