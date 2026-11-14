@@ -1,5 +1,12 @@
 ## Change Log
 
+### v2.88.7 (2026/11/14)
+- request-#3467 Index cookies in null-prototype objects, as tough-cookie 4.1.3 does, GHSA-72xf-g2v4-qvf3 (CVE-2023-26136): a cookie for the host `__proto__` or `constructor` no longer writes to `Object.prototype` or `Object`, and a cookie named `__proto__` or after another `Object.prototype` member is stored like any other; before, `Set-Cookie: __proto__=x` failed the next request to that host with a TypeError, which ended the process on a redirect (@colincasey)
+- request-#3434 Turn more `a[]` values than `arrayLimit` (20 by default) into an object with the indices as keys, as qs 6.14.1 does, GHSA-6rw7-vpxm-498p (CVE-2025-15284); this applies to the query string of `url` when `qs` is given and to OAuth signatures (@ljharb)
+- request-#3434 Stringify a `qs` or `form` value whose `constructor.isBuffer` is not a function instead of throwing a TypeError, GHSA-4mjr-xmp4-gh2g (CVE-2026-82417) (@ljharb)
+- Take a `Cookie` of the caller's own tough-cookie in `jar.setCookie()` as a copy, since the tough-cookie copy in `lib/vendor/` has a `Cookie` class of its own; a `Cookie` of request-compat is no longer an instance of the caller's tough-cookie 2.5 `Cookie` (@HenkerX64)
+- Keep qs 6.5.5 and tough-cookie 2.5.0 as copies in `lib/vendor/` with these fixes, so npm audit reports neither; npm no longer installs qs and tough-cookie with request-compat, and psl and punycode, the dependencies of tough-cookie 2.5.0, become direct dependencies (@HenkerX64)
+
 ### v2.88.6 (2026/11/13)
 - Let engine packages such as request-compat-undici run this core on another HTTP client through an internal transport contract; `request()` behaves as before (@HenkerX64)
 

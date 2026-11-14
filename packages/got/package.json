@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "got": "16.2.0",
-    "request-compat": "2.88.6"
+    "request-compat": "2.88.7"
   },
   "engines": {
     "node": ">=22.12"

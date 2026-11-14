@@ -36,10 +36,15 @@ long-term way out.
 - **Nothing new to learn.** No new features and no new options, except one
   opt-in switch back to old behaviour (`allowInsecureRedirect`).
 
-npm audit still reports qs and tough-cookie: their fixed versions change
-how query strings and cookies are parsed, which request relies on.
-[docs/tracker.md](docs/tracker.md#known) says for each why the risk is low
-for request.
+npm audit no longer reports qs and tough-cookie. Their fixed versions
+change how query strings and cookies are parsed, which request relies on,
+so request-compat keeps qs 6.5.5 and tough-cookie 2.5.0 as copies in
+`lib/vendor/` and backports only their security fixes: GHSA-6rw7-vpxm-498p
+and GHSA-4mjr-xmp4-gh2g in qs, GHSA-72xf-g2v4-qvf3 in tough-cookie. npm
+no longer installs qs and tough-cookie with request-compat, so code that
+requires them lists them in its own `package.json`. Tests cover each fix;
+what the fixes and the copies change is listed under
+[Cookies and query strings](#cookies-and-query-strings).
 
 ## Use it
 
@@ -157,6 +162,47 @@ redirects, change behaviour too; they are listed in
   longer announces the form's `content-length`. The authenticated retry
   then works on keep-alive sockets (the default since Node 19) instead of
   failing with 400.
+
+### Cookies and query strings
+
+- **Cookies named like prototype members (CVE-2023-26136).** The cookie
+  jar keeps its cookies in objects without a prototype, as tough-cookie
+  4.1.3 does. A cookie for the host `__proto__` or `constructor` no longer
+  writes to `Object.prototype` or `Object`, and a cookie named `__proto__`,
+  `toString` or after another `Object.prototype` member is stored, sent
+  and expired like any other. In 2.88.2 a `Set-Cookie: __proto__=x` made
+  the next request to that host fail with a TypeError, and ended the
+  process when a redirect followed. On Node 10 and later `util.inspect` of
+  the jar's store shows `[Object: null prototype]`.
+- **More `a[]` values than `arrayLimit` (CVE-2025-15284).** With `qs`,
+  the query string of `url` is parsed again. A `[]` key with more values
+  than `arrayLimit` (20 by default, see `qsParseOptions`) becomes an
+  object with the indices as keys instead of an array, as in qs 6.14.1.
+  With the default `qsStringifyOptions` the URL stays the same; with
+  `arrayFormat: 'brackets'` or `'repeat'` or `indices: false`, such
+  values go out as `a[0]`, `a[1]` and so on, with `allowDots` as `a.0`,
+  `a.1` and so on. An index under `[]` that reaches the limit keeps its
+  number: `a[][20]=x` goes out as `a[20]=x` instead of `a[0]=x`. OAuth
+  signs such values as `a[0]`, `a[1]` and so on instead of `a`; both
+  differ from the `a[]` that is sent (request-#2284 in
+  [docs/tracker.md](docs/tracker.md)). Repeated keys without brackets
+  (`a=1&a=2`) stay an array.
+- **A non-function `constructor.isBuffer` (CVE-2026-82417).** A `qs` or
+  `form` value such as `{constructor: {isBuffer: 'x'}}` is stringified like
+  any other object; 2.88.2 threw a TypeError from `request()`. Parsing the
+  query string of `url` with `qsParseOptions` `plainObjects` or
+  `allowPrototypes` can produce such a value.
+- **Cookie objects of your own tough-cookie.** When your project used
+  tough-cookie 2.5 too, npm installed it once for both, so request's
+  `Cookie` objects and yours were of one class. The copy in `lib/vendor/`
+  has a class of its own. `jar.setCookie()` still takes a `Cookie` of your
+  tough-cookie, stores a copy of it and returns the copy instead of your
+  object. It takes `Cookie`
+  objects of tough-cookie 3 and 4 too, which 2.88.2 rejected with a
+  TypeError. The other way round, a `Cookie` from `request.cookie()` or
+  `jar.getCookies()` is no instance of your tough-cookie's `Cookie`, and a
+  `CookieJar` of tough-cookie 2.5 throws a TypeError for it; pass
+  `cookie.toString()` instead.
 
 ### Newer Node
 
