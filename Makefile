@@ -10,6 +10,7 @@ SHELL := /bin/sh
 
 VERSIONS ?= $(shell tr -d '\r' < .github/workflows/test.yml | sed -n 's/^ *node: \[\(.*\)\]$$/\1/p' | tr -d ',')
 UNDICI_VERSIONS ?= $(shell tr -d '\r' < .github/workflows/test.yml | sed -n 's/^ *undici-node: \[\(.*\)\]$$/\1/p' | tr -d ',')
+GOT_VERSIONS ?= $(shell tr -d '\r' < .github/workflows/test.yml | sed -n 's/^ *got-node: \[\(.*\)\]$$/\1/p' | tr -d ',')
 NPM_INSTALL := npm install --ignore-scripts --no-package-lock --no-audit --no-fund --legacy-peer-deps --loglevel=error
 
 # $(call in_node,<node version>,<npm scripts>): copy the repository without
@@ -22,9 +23,24 @@ docker run --rm -v "$(CURDIR):/src:ro" "node:$(1)" sh -ec '
   for script in $(2); do npm run "$$script"; done'
 endef
 
+# $(call engine_in_node,<engine>,<node versions>): run `make install-<engine>
+# test-<engine>` on a copy of the repository in node:<version> containers.
+define engine_in_node
+status=0
+for version in $(2); do
+  echo "== node:$$version"
+  docker run --rm -v "$(CURDIR):/src:ro" "node:$$version" sh -ec '
+    mkdir /app && tar -C /src --exclude=./node_modules --exclude=./packages/$(1)/node_modules -cf - . | tar -C /app -xf - && cd /app
+    node -v && npm -v
+    $(NPM_INSTALL)
+    make install-$(1) test-$(1)' || status=1
+done
+exit $$status
+endef
+
 .DEFAULT_GOAL := help
 
-.PHONY: help install install-undici test test-undici lint test-cov check-original-tests test-in-docker test-undici-in-docker lint-in-docker release-notes publish
+.PHONY: help install install-undici install-got test test-undici test-got lint test-cov check-original-tests test-in-docker test-undici-in-docker test-got-in-docker lint-in-docker release-notes publish
 
 help: ## this list
 	@awk '/^[a-z][a-zA-Z0-9_-]*:/ { name = substr($$0, 1, index($$0, ":") - 1); text = index($$0, "## ") ? substr($$0, index($$0, "## ") + 3) : ""; printf "make %-22s %s\n", name, text }' $(firstword $(MAKEFILE_LIST))
@@ -34,6 +50,9 @@ install: ## install the dependencies like CI does
 
 install-undici: ## install the undici engine package with the core linked from this checkout
 	@cd packages/undici && npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund --loglevel=error ../..
+
+install-got: ## install the got engine package with the core linked from this checkout
+	@cd packages/got && npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund --loglevel=error ../..
 
 # Node 16 and older are built with OpenSSL 1.x and fail on the OpenSSL 3
 # configuration of current Linux systems ("DSO support routines"); they get
@@ -47,6 +66,10 @@ test: ## tests on the Node you have, like each CI job
 test-undici: ## engine tests and the core suite through undici on the Node you have (>= 22.19)
 	@node node_modules/tape/bin/tape 'packages/undici/tests/test-*.js'
 	node packages/undici/tests/run-core-suite.js
+
+test-got: ## engine tests and the core suite through got on the Node you have (>= 22.12)
+	@node node_modules/tape/bin/tape 'packages/got/tests/test-*.js'
+	node packages/got/tests/run-core-suite.js
 
 lint: ## lint, like CI
 	npm run lint
@@ -83,6 +106,10 @@ test-undici-in-docker: ## test-undici in node:<version> containers; UNDICI_VERSI
 	    make install-undici test-undici' || status=1
 	done
 	exit $$status
+
+test-got-in-docker: ## test-got in node:<version> containers; GOT_VERSIONS="22 26"
+	@test -n "$(strip $(GOT_VERSIONS))" || { echo 'no Node versions: set GOT_VERSIONS or check the got-node matrix in .github/workflows/test.yml'; exit 2; }
+	$(call engine_in_node,got,$(GOT_VERSIONS))
 
 lint-in-docker: ## lint in a node:22 container
 	@$(call in_node,22,lint)

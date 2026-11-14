@@ -1,0 +1,47 @@
+{
+  "name": "request-compat-got",
+  "version": "1.0.0-beta.0",
+  "description": "request-compat on got: the same request API and behaviour with got as the HTTP client.",
+  "keywords": [
+    "request",
+    "got",
+    "http",
+    "https",
+    "drop-in",
+    "replacement",
+    "deprecated",
+    "migration",
+    "compat",
+    "request-promise",
+    "overrides"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/HenkerX64/request-compat/tree/master/packages/got#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HenkerX64/request-compat.git",
+    "directory": "packages/got"
+  },
+  "bugs": {
+    "url": "https://github.com/HenkerX64/request-compat/issues"
+  },
+  "main": "index.js",
+  "files": [
+    "CHANGELOG.md",
+    "index.js",
+    "lib/"
+  ],
+  "dependencies": {
+    "got": "16.2.0",
+    "request-compat": "2.88.6"
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "publishConfig": {
+    "tag": "next"
+  },
+  "scripts": {
+    "test": "make -C ../.. test-got"
+  }
+}
