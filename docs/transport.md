@@ -63,7 +63,9 @@ The **exchange** is what the core keeps as `self.req`. It has the members the co
 nothing else: `write`, `end`, `abort`, `setTimeout(ms, fn)` (idle time between bytes),
 `removeHeader(name)`, `finished` or `writableFinished`, events `response` (an IncomingMessage-like
 readable: `statusCode`, `statusMessage`, `httpVersion`, `headers`, `rawHeaders`), `error`, `drain`,
-and two **lifecycle events** instead of the `socket` event. Every exchange event (`connecting`,
+and two **lifecycle events** instead of the `socket` event. `error` may also come after
+`response`, as with Node's ClientRequest (an `EPIPE` after a 413); the core emits it unless the
+request was aborted. Every exchange event (`connecting`,
 `reused`, `response`, `error`, `drain`) is emitted asynchronously, after `send` has returned,
 because the core attaches its listeners then. The Node transport's exchange (the ClientRequest)
 carries the core's `connecting` and `reused` listeners, so `r.req.eventNames()` lists them; every
@@ -164,6 +166,51 @@ transport itself sits under a Symbol key, which options never reach.
   the test that pins its difference), the proof-of-concept scenarios are tests
   (`tests/test-scenarios.js`), and the A/B harness of real dependents runs on the engine.
 
+## Engine package: request-compat-got
+
+- `packages/got/`, npm name `request-compat-got`, own semver from 1.0.0, `"request-compat":
+  "2.88.6"`, `got` exactly `16.2.0`, `engines.node` `>=22.12` (got 16 is ESM only, and Node loads
+  ESM with `require()` without a flag from 22.12 on), CI on Node 22, 24, 26.
+- `send` runs the Node transport's agent selection and TLS session rule (copied into
+  `lib/agents.js`), creates Node's `ClientRequest` with the Node transport's options and hands it
+  to got through got's `request` option. got runs its hooks, writes the body and publishes its
+  diagnostics channels; the core gets Node's own `IncomingMessage`. Every option of request 2.88.2
+  works as with the Node transport, and the core suite passes through the engine with no expected
+  failure.
+- `got` (only in this package, law 5): a got instance (`got.extend(...)`) whose `beforeRequest`
+  hooks (headers), `beforeError` and `init` hooks, handlers and DNS options apply. Forced on every
+  hop: no redirects, no decompression, no cookie jar, no HTTP errors, no retry, no timeouts, no
+  cache. Instance options that would bypass the core's agent (`agent`, `https`, `http2`,
+  `localAddress`, `createConnection`, ...) are refused as `got.<name>` with
+  `OPTION_NOT_SUPPORTED`; another value is a `TypeError` with code `INVALID_GOT_INSTANCE`.
+- HTTP/2 is refused: got 16's own HTTP/2 client bypasses the core's agent, pool, tunnel and TLS
+  rules. The engine relies on got internals (which `response` listener on the `ClientRequest` is
+  got's), held by the exact pin and its tests.
+
+## Engine package: request-compat-impit
+
+- `packages/impit/`, npm name `request-compat-impit`, own semver from 1.0.0, `"request-compat":
+  "2.88.6"`, `impit` exactly `0.14.9` (a native binary per platform), `engines.node` `>=20`, CI on
+  Node 20, 22, 24, 26.
+- Every hop goes through `impit.fetch` with `redirect: 'manual'`; the core follows redirects and
+  sends cookies. One `Impit` instance per configuration (browser, proxy, `ignoreTlsErrors`,
+  `localAddress`, ...), so connections are never shared across configurations. The proxy the core
+  resolved is the only one: impit 0.14.9 reads the proxy variables itself, and the engine keeps
+  them from it.
+- `browser` (impit's browser profile) and `impit` (a caller's `Impit` instance for every hop;
+  then the proxy, TLS and `localAddress` options are refused), only in this package (law 5); an
+  `impit` value without `fetch` is a `TypeError` with code `INVALID_IMPIT`.
+- Refused with `OPTION_NOT_SUPPORTED`: `ca`, client certificates and the other TLS options impit
+  cannot take, Node-object options, methods outside impit's list and a body on GET. `strictSSL:
+  false` becomes `ignoreTlsErrors`.
+- No socket, so no `socket` event; impit cannot cancel a request before its response, so
+  `abort()` and `timeout` end it for the caller only; impit decodes compressed responses itself
+  and the response then has no `content-encoding` and no `content-length`; header names go out in
+  lower case with `accept` and `accept-encoding` added; `httpVersion` is reported as `1.1`. The
+  full list is in the package README.
+- Proof: the core suite runs through the engine with 110 expected failures, each pinned by an
+  engine test.
+
 ## Order of work
 
 1. Core, release 2.88.6 (no behaviour change, so a patch): (a) lifecycle events and the Node
@@ -175,8 +222,12 @@ transport itself sits under a Symbol key, which options never reach.
    expected-failures list, CI job, README with the compatibility table; first release
    `1.0.0-beta.0` with dist-tag `next`. Done up to the release in "Added the undici engine package
    request-compat-undici"; `1.0.0-beta.0` is published after the core 2.88.6.
-3. No got package: got runs on Node's `http`, so it adds little over the Node transport; another
-   engine package follows only for a capability Node's `http` lacks.
+3. `packages/got` and `packages/impit` (2026-11-14): the maintainer reversed the earlier "no got
+   package" and asked for both engines. Both were built without a core change, which is the test
+   of the 2.88.6 contract; what they report is wording in this file and reuse (the Node
+   transport's agent helpers are private, so the got engine copies them), not a missing member.
+   got adds its hooks, DNS cache and diagnostics around Node's `http`; impit adds the TLS and
+   HTTP/2 fingerprint of a browser, a capability Node's `http` lacks.
 
 ## Decisions
 

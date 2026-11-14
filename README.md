@@ -182,6 +182,8 @@ Known issues that stay as in 2.88.2 are listed in
 - [CHANGELOG.md](CHANGELOG.md): every change on top of request 2.88.2
 - [docs/tracker.md](docs/tracker.md): planned, known and rejected problems
 - [packages/undici](packages/undici/README.md): request-compat-undici, the same core on undici (beta)
+- [packages/got](packages/got/README.md): request-compat-got, the same core with got's hooks around Node's `http` (beta)
+- [packages/impit](packages/impit/README.md): request-compat-impit, the same core on impit with a browser's TLS and HTTP/2 fingerprint (beta)
 - [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md): how
   changes are made and the rules they follow
 
