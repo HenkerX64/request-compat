@@ -16,6 +16,7 @@ PARITY_SUITE_REPOSITORY ?= $(shell tr -d '\r' < .github/workflows/parity.yml | s
 PARITY_SUITE_COMMIT ?= $(shell tr -d '\r' < .github/workflows/parity.yml | sed -n 's/^ *PARITY_SUITE_COMMIT: *\([0-9a-f]*\)$$/\1/p')
 PARITY_TARGETS ?= core got undici impit
 PARITY_NODE ?= 22
+CHANGELOG ?= CHANGELOG.md
 NPM_INSTALL := npm install --ignore-scripts --no-package-lock --no-audit --no-fund --legacy-peer-deps --loglevel=error
 
 # $(call in_node,<node version>,<npm scripts>): copy the repository without
@@ -45,7 +46,7 @@ endef
 
 .DEFAULT_GOAL := help
 
-.PHONY: help install install-undici install-got install-impit test test-undici test-got test-impit lint test-cov check-original-tests test-in-docker test-undici-in-docker test-got-in-docker test-impit-in-docker lint-in-docker release-notes publish
+.PHONY: help install install-undici install-got install-impit test test-undici test-got test-impit lint test-cov check-original-tests test-in-docker test-undici-in-docker test-got-in-docker test-impit-in-docker lint-in-docker release-notes publish publish-engine
 
 help: ## this list
 	@awk '/^[a-z][a-zA-Z0-9_-]*:/ { name = substr($$0, 1, index($$0, ":") - 1); text = index($$0, "## ") ? substr($$0, index($$0, "## ") + 3) : ""; printf "make %-22s %s\n", name, text }' $(firstword $(MAKEFILE_LIST))
@@ -152,11 +153,11 @@ parity-in-docker: ## parity in a node:<PARITY_NODE> container, default 22; PARIT
 lint-in-docker: ## lint in a node:22 container
 	@$(call in_node,22,lint)
 
-release-notes: ## the CHANGELOG lines of TAG=v<version>
+release-notes: ## the CHANGELOG lines of TAG=v<version>, from CHANGELOG=<file> if given
 	@test -n "$(TAG)" || { echo 'usage: make release-notes TAG=v<version>'; exit 2; }
-	notes=$$(awk -v heading='### $(TAG) ' 'index($$0, heading) == 1 { found = 1; next } /^### / { if (found) exit } found' CHANGELOG.md)
+	notes=$$(awk -v heading='### $(TAG) ' 'index($$0, heading) == 1 { found = 1; next } /^### / { if (found) exit } found' '$(CHANGELOG)')
 	if [ -z "$$(printf '%s' "$$notes" | tr -d '[:space:]')" ]; then
-	  echo "CHANGELOG.md has no lines under a '### $(TAG) (YYYY/MM/DD)' heading" >&2
+	  echo "$(CHANGELOG) has no lines under a '### $(TAG) (YYYY/MM/DD)' heading" >&2
 	  exit 1
 	fi
 	printf '%s\n' "$$notes"
@@ -183,4 +184,38 @@ publish: ## npm publish and GitHub release of TAG=v<version>, each skipped if it
 	  echo "GitHub release $(TAG) already exists"
 	else
 	  gh release create "$(TAG)" --title "$(TAG)" --target "$$(git rev-parse HEAD)" --notes-file "$$notes_file" $$prerelease
+	fi
+
+publish-engine: ## npm publish and GitHub release of TAG=<engine>-v<version> from packages/<engine>, each skipped if it exists; run by release-engine.yml
+	@test -n "$(TAG)" || { echo 'usage: make publish-engine TAG=<engine>-v<version>'; exit 2; }
+	engine=$$(printf '%s' '$(TAG)' | sed -n 's/^\([a-z][a-z0-9]*\)-v.*$$/\1/p')
+	if [ -z "$$engine" ] || [ ! -f "packages/$$engine/package.json" ]; then
+	  echo "Tag $(TAG) names no package under packages/"
+	  exit 1
+	fi
+	version=$$(node -p "require('./packages/$$engine/package.json').version")
+	if [ "$(TAG)" != "$$engine-v$$version" ]; then
+	  echo "Tag $(TAG) does not match the packages/$$engine/package.json version $$version"
+	  exit 1
+	fi
+	core=$$(node -p "require('./packages/$$engine/package.json').dependencies['request-compat']")
+	if [ "$$(npm view "request-compat@$$core" version 2>/dev/null)" != "$$core" ]; then
+	  echo "request-compat@$$core, which packages/$$engine depends on, is not on npm"
+	  exit 1
+	fi
+	notes_file=$$(mktemp)
+	$(MAKE) --no-print-directory -s release-notes TAG="v$$version" CHANGELOG="packages/$$engine/CHANGELOG.md" > "$$notes_file"
+	dist_tag=latest
+	prerelease=
+	case "$$version" in *-*) dist_tag=next; prerelease=--prerelease ;; esac
+	name=$$(node -p "require('./packages/$$engine/package.json').name")
+	if [ "$$(npm view "$$name@$$version" version 2>/dev/null)" = "$$version" ]; then
+	  echo "$$name@$$version is already on npm"
+	else
+	  (cd "packages/$$engine" && npm publish --access public --tag "$$dist_tag" --ignore-scripts)
+	fi
+	if gh release view "$(TAG)" >/dev/null 2>&1; then
+	  echo "GitHub release $(TAG) already exists"
+	else
+	  gh release create "$(TAG)" --title "$$name $$version" --target "$$(git rev-parse HEAD)" --notes-file "$$notes_file" --latest=false $$prerelease
 	fi

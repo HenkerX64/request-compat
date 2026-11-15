@@ -30,4 +30,6 @@ New options or capabilities are out of scope and will be closed.
 ## Releases
 
 Only the maintainer releases, by pushing a tag `v<version>`; the steps are
-in the `Makefile` and in `.github/workflows/release.yml`.
+in the `Makefile` and in `.github/workflows/release.yml`. An engine package
+is released the same way by a tag `<engine>-v<version>`, for example
+`undici-v1.0.0-beta.1`, through `.github/workflows/release-engine.yml`.
