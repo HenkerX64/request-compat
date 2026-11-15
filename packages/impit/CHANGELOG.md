@@ -1,7 +1,7 @@
 ## Change Log
 
-### 1.0.0-beta.0 (unreleased)
-- Run the request-compat 2.88.6 core on impit 0.14.9 through its transport contract, on Node 20 or later; every request goes through impit, nothing falls back to Node's `http` (@HenkerX64)
+### v1.0.0-beta.0 (2026/11/15)
+- Run the request-compat 2.88.7 core on impit 0.14.9 through its transport contract, on Node 20 or later; every request goes through impit, nothing falls back to Node's `http` (@HenkerX64)
 - Add the `browser` option: the request goes out with the TLS and HTTP/2 fingerprint and the default headers of that browser; one impit instance per configuration, so connections are never shared between configurations (@HenkerX64)
 - Add the `impit` option: a caller's Impit instance sends every hop of a request (@HenkerX64)
 - Keep redirects, cookies and timeouts in the core: every fetch runs with `redirect: 'manual'`, without a cookie jar and without impit's timeout (@HenkerX64)

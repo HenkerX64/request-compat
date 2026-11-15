@@ -26,7 +26,7 @@ Use it for the hosts that need the fingerprint.
 
 ## Status
 
-Beta, not published yet. `1.0.0-beta.0` goes out under the npm dist-tag `next`.
+Beta. `1.0.0-beta.0` is published under the npm dist-tag `next`.
 
 Requires Node.js 20 or later (the floor of impit 0.14) and one of impit's prebuilt binaries
 (Linux glibc and musl, macOS, Windows; x64 and arm64), which npm installs as an optional
