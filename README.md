@@ -42,7 +42,10 @@ so request-compat keeps qs 6.5.5 and tough-cookie 2.5.0 as copies in
 `lib/vendor/` and backports only their security fixes: GHSA-6rw7-vpxm-498p
 and GHSA-4mjr-xmp4-gh2g in qs, GHSA-72xf-g2v4-qvf3 in tough-cookie. npm
 no longer installs qs and tough-cookie with request-compat, so code that
-requires them lists them in its own `package.json`. Tests cover each fix;
+requires them lists them in its own `package.json`. `request-promise` and
+`request-promise-native` still bring tough-cookie 2.5.0, which npm audit
+reports; [an override](docs/migration.md#your-own-code-uses-request)
+replaces it. Tests cover each fix;
 what the fixes and the copies change is listed under
 [Cookies and query strings](#cookies-and-query-strings).
 
@@ -51,21 +54,20 @@ what the fixes and the copies change is listed under
 Your own code: `require('request')` stays as it is.
 
 ```sh
-npm install request@npm:request-compat@^2.88.6
+npm install request@npm:request-compat
 ```
 
-A dependency that needs `request` (npm 8.3 or later):
+A dependency that needs `request` (npm 8.3 or later), in a POSIX shell or
+PowerShell:
 
-```json
-{
-  "overrides": {
-    "request": "npm:request-compat@^2.88.6"
-  }
-}
+```sh
+npm pkg set overrides.request="npm:request-compat@^$(npm view request-compat version)"
+npm install
 ```
 
-Then check that every copy is replaced: `npm ls request` shows
-`request@npm:request-compat@2.88.6` for each of them.
+Both write the newest version as the lower bound of the range. Then check
+that every copy is replaced: `npm ls request` shows
+`request@npm:request-compat@…` for each of them.
 
 Your code and a dependency at once, npm before 8.3, yarn 1 and pnpm (not
 tested yet), how to check the result and how to go back:

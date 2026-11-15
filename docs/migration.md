@@ -15,25 +15,44 @@ then [check the result](#check-the-result):
 ## Your own code uses request
 
 ```sh
-npm install request@npm:request-compat@^2.88.6
+npm install request@npm:request-compat
 ```
 
-`package.json` then contains `"request": "npm:request-compat@^2.88.6"`.
-The range starts at 2.88.6, so a lockfile cannot keep 2.88.3 or 2.88.4,
-which miss fixes listed in the README.
+`package.json` then contains `"request": "npm:request-compat@^<version>"`
+with the newest version as the lower bound, so a lockfile cannot keep an
+older version, which misses fixes listed in the README.
 
 `request-promise` and `request-promise-native` require `request ^2.34` as a
 peer dependency, so `request` is already in your own `dependencies`: take
 this step, and they run on request-compat unchanged.
 
-## A dependency uses request
-
-npm 8.3 or later:
+They also depend on tough-cookie 2.5.0, which npm audit reports. They only
+load it, request-compat does not use it, so an override to a fixed version
+makes the audit clean:
 
 ```json
 {
   "overrides": {
-    "request": "npm:request-compat@^2.88.6"
+    "tough-cookie": "^4.1.3"
+  }
+}
+```
+
+## A dependency uses request
+
+npm 8.3 or later, in a POSIX shell or PowerShell:
+
+```sh
+npm pkg set overrides.request="npm:request-compat@^$(npm view request-compat version)"
+npm install
+```
+
+`package.json` then contains the newest version as the lower bound:
+
+```json
+{
+  "overrides": {
+    "request": "npm:request-compat@^<version>"
   }
 }
 ```
@@ -59,10 +78,18 @@ If you have the direct dependency and an override, point the override at the
 dependency, so that only one copy is installed. `"$request"` stands for the
 version of `request` in your own `dependencies`:
 
+```sh
+npm install request@npm:request-compat
+npm pkg set 'overrides.request=$request'
+npm install
+```
+
+`package.json` then contains:
+
 ```json
 {
   "dependencies": {
-    "request": "npm:request-compat@^2.88.6"
+    "request": "npm:request-compat@^<version>"
   },
   "overrides": {
     "request": "$request"
@@ -84,7 +111,7 @@ replaced it:
 ```
 my-app@1.0.0
 └─┬ some-dependency@1.0.0
-  └── request@npm:request-compat@2.88.6 overridden
+  └── request@npm:request-compat@<version> overridden
 ```
 
 A copy that still shows `request@2.x` without `npm:request-compat` is the
@@ -95,7 +122,7 @@ while only the alias is installed:
 my-app@1.0.0
 ├─┬ some-dependency@1.0.0
 │ └── request@2.81.0
-└── request@npm:request-compat@2.88.6
+└── request@npm:request-compat@<version>
 ```
 
 Add the override from [a dependency](#a-dependency-uses-request) to replace
