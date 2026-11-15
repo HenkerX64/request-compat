@@ -40,7 +40,8 @@ request-compat on Node's transport does the same with fewer dependencies and les
 
 ## Status
 
-Beta. `1.0.0-beta.0` is published under the npm dist-tag `next`.
+Beta. The newest beta is published under the npm dist-tag `next`. npm pointed `latest` at the
+first version, `1.0.0-beta.0`; `latest` moves on with `1.0.0`.
 
 Requires Node.js 22.12 or later: got 16 is an ES module, and this package loads it with
 `require()`, which works without a flag from Node 22.12 on. It takes `require` from Node's own

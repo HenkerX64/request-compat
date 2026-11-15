@@ -1,6 +1,6 @@
 {
   "name": "request-compat-impit",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "description": "request-compat on impit: the same request API and behaviour with a browser's TLS and HTTP/2 fingerprint.",
   "keywords": [
     "request",

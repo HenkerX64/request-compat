@@ -1,5 +1,8 @@
 ## Change Log
 
+### v1.0.0-beta.1 (2026/11/15)
+- Publish from GitHub Actions with npm provenance; the code is the same as in 1.0.0-beta.0 (@HenkerX64)
+
 ### v1.0.0-beta.0 (2026/11/15)
 - Run the request-compat 2.88.7 core on undici 8.12.4 through its transport contract, on Node 22.19 or later; every request goes through undici, nothing falls back to Node's `http` (@HenkerX64)
 - Send HTTP/1.1 through one undici dispatcher per TLS context, so connections and TLS sessions are never shared between contexts; a request with its own `checkServerIdentity` gets a connection of its own (@HenkerX64)

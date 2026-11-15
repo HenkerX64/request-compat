@@ -1,6 +1,6 @@
 {
   "name": "request-compat-undici",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "description": "request-compat on undici: the same request API and behaviour with undici as the HTTP client.",
   "keywords": [
     "request",

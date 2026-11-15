@@ -1,5 +1,8 @@
 ## Change Log
 
+### v1.0.0-beta.1 (2026/11/15)
+- Publish from GitHub Actions with npm provenance; the code is the same as in 1.0.0-beta.0 (@HenkerX64)
+
 ### v1.0.0-beta.0 (2026/11/15)
 - Run the request-compat 2.88.7 core on impit 0.14.9 through its transport contract, on Node 20 or later; every request goes through impit, nothing falls back to Node's `http` (@HenkerX64)
 - Add the `browser` option: the request goes out with the TLS and HTTP/2 fingerprint and the default headers of that browser; one impit instance per configuration, so connections are never shared between configurations (@HenkerX64)

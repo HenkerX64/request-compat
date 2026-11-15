@@ -22,9 +22,9 @@ nothing falls back to Node's `http`.
 
 ## Status
 
-Beta. `1.0.0-beta.0` is published under the npm dist-tag `next`. `latest` follows once the
-packages that depend on `request` have been run against this engine and against Node's transport
-with the same results.
+Beta. The newest beta is published under the npm dist-tag `next`. npm pointed `latest` at the
+first version, `1.0.0-beta.0`; `latest` moves on with `1.0.0`, once the packages that depend on
+`request` have been run against this engine and against Node's transport with the same results.
 
 Requires Node.js 22.19 or later (the floor of undici 8). On an older Node, `require` throws an
 `Error` with `code: 'NODE_VERSION_NOT_SUPPORTED'`.

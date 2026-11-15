@@ -125,8 +125,9 @@ transport itself sits under a Symbol key, which options never reach.
   range of the core release that ships the contract, dependency `undici` exactly `8.12.4` (8.12.2+
   fixes GHSA-2m5v-pch6-74hx; the engine depends on its message text and call order),
   `engines.node` `>=22.19`.
-- Releases start as `1.0.0-beta.0` with dist-tag `next`; `latest` follows once the A/B harness of
-  real dependents passes on the engine.
+- Releases start as `1.0.0-beta.0` with dist-tag `next`; npm also pointed `latest` at that first
+  version, and `latest` moves on with `1.0.0`, once the A/B harness of real dependents passes on the
+  engine. A tag `undici-v<version>` publishes through `.github/workflows/release-engine.yml`.
 - Consumers: `"request": "npm:request-compat-undici@next"` during the beta (a range like `^1` does
   not match a prerelease), `"npm:request-compat-undici@^1"` from 1.0.0 on, plus
   `"overrides": { "request": "$request" }`.
@@ -221,7 +222,7 @@ transport itself sits under a Symbol key, which options never reach.
 2. `packages/undici`: the proof-of-concept adapter rewritten against the contract, the
    expected-failures list, CI job, README with the compatibility table; first release
    `1.0.0-beta.0` with dist-tag `next`. Done up to the release in "Added the undici engine package
-   request-compat-undici"; `1.0.0-beta.0` is published after the core 2.88.6.
+   request-compat-undici"; `1.0.0-beta.0` was published on 2026-11-15, after the core 2.88.7.
 3. `packages/got` and `packages/impit` (2026-11-14): the maintainer reversed the earlier "no got
    package" and asked for both engines. Both were built without a core change, which is the test
    of the 2.88.6 contract; what they report is wording in this file and reuse (the Node
