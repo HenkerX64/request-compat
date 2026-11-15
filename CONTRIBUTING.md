@@ -33,3 +33,8 @@ Only the maintainer releases, by pushing a tag `v<version>`; the steps are
 in the `Makefile` and in `.github/workflows/release.yml`. An engine package
 is released the same way by a tag `<engine>-v<version>`, for example
 `undici-v1.0.0-beta.1`, through `.github/workflows/release-engine.yml`.
+
+A repository rule lets one push update at most three branches and tags:
+GitHub creates no push event for the tags of a push with more than three
+tags, so their release workflows would not start. Push `master` and the
+release tags separately.
