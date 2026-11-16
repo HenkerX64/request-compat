@@ -2,6 +2,7 @@
 
 const http = require('http')
 const https = require('https')
+const net = require('net')
 const path = require('path')
 const tls = require('tls')
 const zlib = require('zlib')
@@ -379,43 +380,104 @@ test('a response with status 3xx, 401 or 407 is announced when its body has ende
   await close(server)
 })
 
+function within (ms, promise) {
+  return Promise.race([promise.then(() => true), wait(ms).then(() => false)])
+}
+
+function proxyHoldingSecondConnection (port) {
+  const held = []
+  let accepted = 0
+  const proxy = net.createServer(client => {
+    accepted++
+    const upstream = net.connect(port, '127.0.0.1')
+    client.on('error', () => upstream.destroy())
+    upstream.on('error', () => client.destroy())
+    const forward = () => {
+      client.pipe(upstream)
+      upstream.pipe(client)
+    }
+    if (accepted === 2) {
+      client.pause()
+      held.push(forward)
+      proxy.emit('held')
+    } else {
+      forward()
+    }
+  })
+  proxy.release = () => held.splice(0).forEach(forward => forward())
+  return proxy
+}
+
 async function connectionsAfterTwoRequestsAtOnce (api) {
-  const server = httpsServer()
+  let holdNext = false
+  let respondHeld = null
+  const firstHeld = new Promise(resolve => {
+    respondHeld = resolve
+  })
+  let served = 0
+  let secondServed = null
+  const secondDone = new Promise(resolve => {
+    secondServed = resolve
+  })
+  const server = httpsServer((req, res) => {
+    served++
+    if (holdNext) {
+      holdNext = false
+      respondHeld(() => res.end('ok'))
+      return
+    }
+    res.end('ok')
+    if (served === 3) {
+      secondServed()
+    }
+  })
   const sockets = new Set()
   const carried = new Set()
-  server.on('secureConnection', socket => sockets.add(socket))
-  server.prependListener('request', req => carried.add(req.socket))
-  const url = 'https://localhost:' + await listen(server) + '/'
-  await call(api, {url, strictSSL: false})
-  await Promise.all([call(api, {url, strictSSL: false}), call(api, {url, strictSSL: false})])
-  await wait(100)
-  const spare = Array.from(sockets).filter(socket => !carried.has(socket) && !socket.destroyed)
-  let closed = false
-  server.close(() => {
-    closed = true
+  let bothSecure = null
+  const secured = new Promise(resolve => {
+    bothSecure = resolve
   })
-  await wait(300)
-  const closedInTime = closed
+  server.on('secureConnection', socket => {
+    sockets.add(socket)
+    if (sockets.size === 2) {
+      bothSecure()
+    }
+  })
+  server.prependListener('request', req => carried.add(req.socket))
+  const proxy = proxyHoldingSecondConnection(await listen(server))
+  const url = 'https://localhost:' + await listen(proxy) + '/'
+  await call(api, {url, strictSSL: false})
+  holdNext = true
+  const held = new Promise(resolve => proxy.once('held', resolve))
+  const both = Promise.all([call(api, {url, strictSSL: false}), call(api, {url, strictSSL: false})])
+  const respondFirst = await firstHeld
+  await within(2000, held)
+  respondFirst()
+  await within(1000, secondDone)
+  proxy.release()
+  await both
+  await within(2000, secured)
+  const spare = Array.from(sockets).filter(socket => !carried.has(socket) && !socket.destroyed)
+  const closed = new Promise(resolve => server.close(resolve))
+  const closedInTime = spare.every(socket => socket.destroyed)
   spare.forEach(socket => socket.destroy())
-  await wait(100)
-  const closedWithoutSpare = closed
+  const closedWithoutSpare = await within(2000, closed)
   sockets.forEach(socket => socket.destroy())
+  await close(proxy)
   return {connections: sockets.size, spare: spare.length, closedInTime, closedWithoutSpare}
 }
 
 async function closeWaitsForAConnectionWithoutRequest () {
   const server = httpsServer()
+  const accepted = new Promise(resolve => server.once('secureConnection', resolve))
   const port = await listen(server)
   const socket = tls.connect({port, host: '127.0.0.1', rejectUnauthorized: false})
-  await new Promise(resolve => socket.once('secureConnect', resolve))
-  await wait(100)
-  let closed = false
-  server.close(() => {
-    closed = true
-  })
-  await wait(300)
-  const waits = !closed
+  socket.on('error', () => {})
+  const serverSide = await accepted
+  server.close()
+  const waits = !serverSide.destroyed
   socket.destroy()
+  serverSide.destroy()
   return waits
 }
 
