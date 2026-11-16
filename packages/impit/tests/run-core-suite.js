@@ -11,6 +11,7 @@ const expectedFile = path.join(__dirname, 'core-suite-expected.json')
 const EXCLUDED = ['test-transport.js', 'test-node-transport.js', 'test-api-shape.js']
 const TIMEOUT = 120000
 const MAX_SKIPS = 30
+const TEARDOWN_TEST = 'cleanup'
 const SUMMARY = /^# (tests|pass|fail)\s+\d+$/
 const FINAL = /^# (ok|fail\s+\d+)$/
 
@@ -74,6 +75,9 @@ function runFile (file, logFile, intermittent) {
     const crash = run.timedOut || (run.status !== 0 && !run.tap.final)
     if (crash && intermittent.indexOf(run.open) !== -1) {
       return {failures: crashed.concat(run.tap.failures.filter(name => name !== '*')).concat(run.open), passes: run.passes}
+    }
+    if (crash && run.open === TEARDOWN_TEST) {
+      return {failures: crashed.concat(run.tap.failures.filter(name => name !== '*')).concat(TEARDOWN_TEST), passes: run.passes}
     }
     if (!crash) {
       const failures = crashed.concat(run.tap.failures.filter(name => name !== '*'))

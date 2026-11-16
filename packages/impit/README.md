@@ -447,9 +447,12 @@ In the repository, with the root dev dependencies installed: `npm install --no-s
 engine tests and the core suite of request-compat through the engine
 (`tests/run-core-suite.js`). Core tests that fail by a difference above are listed in
 `tests/core-suite-expected.json`, each with the test that pins its difference. An entry marked
-`intermittent` depends on timing and may or may not occur (one: the `cleanup` of
-`test-bearer-auth.js` waits for a spare connection on Node 20, 22 and 24, see
-[Connections](#connections); when it occurs the run of that file ends at the 120 second limit). The core tests run unchanged; the
+`intermittent` depends on timing and may or may not occur (two: the `cleanup` of
+`test-bearer-auth.js` and of `test-defaults.js` wait for a spare connection on Node 20, 22 and
+24, see [Connections](#connections); when it occurs the run of that file ends at the 120 second
+limit). A crash in the `cleanup` test of a file fails the file once: the runner does not skip it and
+run the file again, because without its `cleanup` the servers of the file stay open and every later
+run would end at the limit as well. The core tests run unchanged; the
 harness (`tests/use-engine.js`) only swaps the entry point and makes Node's transport throw. The three core
 files that test Node's own transport (`test-transport.js`, `test-node-transport.js`,
 `test-api-shape.js`) are not run through the engine.

@@ -106,6 +106,12 @@
     "reason": "headers: impit adds accept-encoding, which the echoed headers then contain (test-differences.js: impit adds accept and accept-encoding unless the caller or the core sets them)"
   },
   {
+    "file": "test-defaults.js",
+    "test": "cleanup",
+    "intermittent": true,
+    "reason": "connections: impit may open a connection that never carries a request, and server.close() waits for it before Node 26; whether one is left depends on timing and Node 26 closes it, so this entry may or may not occur (test-differences.js: impit may open a connection that never carries a request, and server.close() waits for it where Node waits for a connection without a request)"
+  },
+  {
     "file": "test-deflate-raw.js",
     "test": "a raw deflate response is decoded with the events of a gzip response",
     "reason": "gzip: impit does not decode a raw deflate body (test-differences.js: a raw deflate body is an error, the core would decode it)"
