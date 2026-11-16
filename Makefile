@@ -18,6 +18,7 @@ PARITY_TARGETS ?= core got undici impit
 PARITY_NODE ?= 22
 CHANGELOG ?= CHANGELOG.md
 NPM_INSTALL := npm install --ignore-scripts --no-package-lock --no-audit --no-fund --legacy-peer-deps --loglevel=error
+DOCKER_JOBS ?= $(shell nproc 2>/dev/null || echo 4)
 
 # $(call in_node,<node version>,<npm scripts>): copy the repository without
 # node_modules into a node:<version> container, install and run the scripts.
@@ -29,19 +30,44 @@ docker run --rm -v "$(CURDIR):/src:ro" "node:$(1)" sh -ec '
   for script in $(2); do npm run "$$script"; done'
 endef
 
-# $(call engine_in_node,<engine>,<node versions>): run `make install-<engine>
-# test-<engine>` on a copy of the repository in node:<version> containers.
-define engine_in_node
+# $(call in_engine_container,<engine>,<node version>): run `make install-<engine>
+# test-<engine>` on a copy of the repository in a node:<version> container.
+define in_engine_container
+docker run --rm -v "$(CURDIR):/src:ro" "node:$(2)" sh -ec '
+  mkdir /app && tar -C /src --exclude=./node_modules --exclude=./packages/$(1)/node_modules -cf - . | tar -C /app -xf - && cd /app
+  node -v && npm -v
+  $(NPM_INSTALL)
+  make install-$(1) test-$(1)'
+endef
+
+# $(call each_version,<node versions>,<command for $$version>): run the command for
+# the versions in parallel, at most DOCKER_JOBS at once, each into a log of its own;
+# print the logs in the order of the versions and fail when one of them failed.
+define each_version
+logs=$$(mktemp -d)
 status=0
-for version in $(2); do
-  echo "== node:$$version"
-  docker run --rm -v "$(CURDIR):/src:ro" "node:$$version" sh -ec '
-    mkdir /app && tar -C /src --exclude=./node_modules --exclude=./packages/$(1)/node_modules -cf - . | tar -C /app -xf - && cd /app
-    node -v && npm -v
-    $(NPM_INSTALL)
-    make install-$(1) test-$(1)' || status=1
+running=
+finish () {
+  job=$${running%% *}
+  running=$${running#* }
+  if wait "$${job%%:*}"; then result=ok; else result=failed; status=1; fi
+  echo "== node:$${job#*:} $$result"
+  cat "$$logs/$${job#*:}.log"
+}
+for version in $(1); do
+  ( $(2) ) > "$$logs/$$version.log" 2>&1 &
+  running="$$running$$!:$$version "
+  set -- $$running
+  if [ $$# -ge $(DOCKER_JOBS) ]; then finish; fi
 done
+while [ -n "$$running" ]; do finish; done
+rm -rf "$$logs"
 exit $$status
+endef
+
+# $(call engine_in_node,<engine>,<node versions>): in_engine_container for every version.
+define engine_in_node
+$(call each_version,$(2),$(call in_engine_container,$(1),$$version))
 endef
 
 .DEFAULT_GOAL := help
@@ -98,33 +124,19 @@ check-original-tests: ## fail when a test file of request 2.88.2 is gone, like C
 	  exit 1
 	fi
 
-test-in-docker: ## tests in node:<version> containers; VERSIONS="6 26", default: the CI matrix
+test-in-docker: ## tests in node:<version> containers in parallel; VERSIONS="6 26", default: the CI matrix; DOCKER_JOBS at once, default: the CPUs
 	@test -n "$(strip $(VERSIONS))" || { echo 'no Node versions: set VERSIONS or check the matrix in .github/workflows/test.yml'; exit 2; }
-	status=0
-	for version in $(VERSIONS); do
-	  echo "== node:$$version"
-	  $(call in_node,$$version,test-ci) || status=1
-	done
-	exit $$status
+	$(call each_version,$(VERSIONS),$(call in_node,$$version,test-ci))
 
-test-undici-in-docker: ## test-undici in node:<version> containers; UNDICI_VERSIONS="22 26"
+test-undici-in-docker: ## test-undici in node:<version> containers in parallel; UNDICI_VERSIONS="22 26"
 	@test -n "$(strip $(UNDICI_VERSIONS))" || { echo 'no Node versions: set UNDICI_VERSIONS or check the undici-node matrix in .github/workflows/test.yml'; exit 2; }
-	status=0
-	for version in $(UNDICI_VERSIONS); do
-	  echo "== node:$$version"
-	  docker run --rm -v "$(CURDIR):/src:ro" "node:$$version" sh -ec '
-	    mkdir /app && tar -C /src --exclude=./node_modules --exclude=./packages/undici/node_modules -cf - . | tar -C /app -xf - && cd /app
-	    node -v && npm -v
-	    $(NPM_INSTALL)
-	    make install-undici test-undici' || status=1
-	done
-	exit $$status
+	$(call engine_in_node,undici,$(UNDICI_VERSIONS))
 
-test-got-in-docker: ## test-got in node:<version> containers; GOT_VERSIONS="22 26"
+test-got-in-docker: ## test-got in node:<version> containers in parallel; GOT_VERSIONS="22 26"
 	@test -n "$(strip $(GOT_VERSIONS))" || { echo 'no Node versions: set GOT_VERSIONS or check the got-node matrix in .github/workflows/test.yml'; exit 2; }
 	$(call engine_in_node,got,$(GOT_VERSIONS))
 
-test-impit-in-docker: ## test-impit in node:<version> containers; IMPIT_VERSIONS="20 26"
+test-impit-in-docker: ## test-impit in node:<version> containers in parallel; IMPIT_VERSIONS="20 26"
 	@test -n "$(strip $(IMPIT_VERSIONS))" || { echo 'no Node versions: set IMPIT_VERSIONS or check the impit-node matrix in .github/workflows/test.yml'; exit 2; }
 	$(call engine_in_node,impit,$(IMPIT_VERSIONS))
 
